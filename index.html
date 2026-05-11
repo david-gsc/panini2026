@@ -58,12 +58,18 @@
   .search::placeholder { color: var(--text2); }
   .team-select { width: 100%; background: var(--bg3); border: 1px solid var(--border);
     border-radius: var(--radius); padding: 9px 14px; color: var(--text); font-size: 13px; margin-bottom: 10px; }
-  .filter-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+  .filter-controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; align-items: center; }
+  .view-toggle { display: flex; gap: 4px; }
+  .view-btn { padding: 5px 10px; border-radius: 6px; border: 1px solid var(--border);
+    background: var(--bg3); color: var(--text2); font-size: 12px; font-weight: 600;
+    cursor: pointer; transition: all .15s; }
+  .view-btn.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+  .filter-btns { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; }
   .fbtn { padding: 5px 12px; border-radius: 99px; border: 1px solid var(--border);
     background: none; color: var(--text2); font-size: 12px; font-weight: 600; cursor: pointer; transition: all .15s; }
   .fbtn.active { background: var(--blue); color: #fff; border-color: var(--blue); }
 
-  /* GRID */
+  /* GRID VIEW */
   .count-label { padding: 6px 16px; font-size: 12px; color: var(--text2); }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(95px, 1fr));
     gap: 8px; padding: 8px 16px 80px; }
@@ -89,6 +95,20 @@
     background: var(--bg3); border: 1px solid var(--border);
     font-size: 12px; cursor: pointer; color: var(--text2);
     display: flex; align-items: center; justify-content: center; line-height: 1; }
+
+  /* LIST VIEW */
+  .list-view { padding: 16px 80px 16px; }
+  .list-country { margin-bottom: 24px; }
+  .list-country-header { font-size: 14px; font-weight: 700; color: var(--blue); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+  .list-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; font-size: 12px; border-bottom: 1px solid rgba(42,48,96,0.3); }
+  .list-item-left { display: flex; align-items: center; gap: 12px; flex: 1; }
+  .list-status { font-size: 14px; width: 20px; text-align: center; }
+  .list-id { font-weight: 700; color: var(--text2); min-width: 50px; }
+  .list-name { color: var(--text2); flex: 1; }
+  .list-actions { display: flex; gap: 8px; align-items: center; }
+  .list-count { font-size: 11px; color: var(--orange); font-weight: 700; min-width: 40px; }
+  .list-btn { padding: 2px 8px; font-size: 11px; border-radius: 4px; border: 1px solid var(--border);
+    background: var(--bg3); color: var(--text2); cursor: pointer; }
 
   /* TEAM LIST */
   .team-item { padding: 12px 16px; border-bottom: 1px solid var(--border); }
@@ -130,6 +150,17 @@
     border-radius: 99px; padding: 8px 14px; font-size: 12px;
     color: var(--text2); cursor: pointer; }
 
+  /* PRINT STYLES */
+  @media print {
+    body { background: white; color: black; }
+    .header, .tabs, .filters, .config-link, .view-toggle, .filter-btns, .search, .team-select, .list-btn, .list-actions { display: none !important; }
+    .list-view { padding: 0; }
+    .list-country-header { color: black; border-color: #ccc; }
+    .list-item { border-color: #ddd; }
+    .list-item-left { gap: 10px; }
+    .count-label { display: none; }
+  }
+
   /* RESPONSIVE */
   @media (min-width: 768px) {
     .header { padding: 20px 32px; }
@@ -140,6 +171,7 @@
     .team-item, .dup-item { padding: 14px 32px; }
     .stats { gap: 12px; }
     .stat-n { font-size: 24px; }
+    .list-view { padding: 16px 32px 80px; }
   }
   @media (min-width: 1024px) {
     .app-wrapper { max-width: 900px; margin: 0 auto; box-shadow: 0 0 60px rgba(0,0,0,0.5); min-height: 100vh; }
@@ -204,15 +236,22 @@
       <select class="team-select" id="teamSel" onchange="renderGrid()">
         <option value="">🌐 Todos los equipos</option>
       </select>
-      <div class="filter-btns">
-        <button class="fbtn active" onclick="setFilter('all',this)" id="filterAll">Todas</button>
-        <button class="fbtn" onclick="setFilter('missing',this)" id="filterMissing">Faltan</button>
-        <button class="fbtn" onclick="setFilter('owned',this)" id="filterOwned">Tengo</button>
-        <button class="fbtn" onclick="setFilter('dup',this)" id="filterDup">Repetidas</button>
+      <div class="filter-controls">
+        <div class="view-toggle">
+          <button class="view-btn active" id="viewGridBtn" onclick="setViewMode('grid')" title="Grid view">⊞</button>
+          <button class="view-btn" id="viewListBtn" onclick="setViewMode('list')" title="List view">☰</button>
+        </div>
+        <div class="filter-btns">
+          <button class="fbtn active" onclick="setFilter('all',this)" id="filterAll">Todas</button>
+          <button class="fbtn" onclick="setFilter('missing',this)" id="filterMissing">Faltan</button>
+          <button class="fbtn" onclick="setFilter('owned',this)" id="filterOwned">Tengo</button>
+          <button class="fbtn" onclick="setFilter('dup',this)" id="filterDup">Repetidas</button>
+        </div>
       </div>
     </div>
     <div class="count-label" id="cntLabel"></div>
-    <div class="grid" id="grid"></div>
+    <div class="grid" id="grid" style="display:none"></div>
+    <div class="list-view" id="listView" style="display:none"></div>
   </div>
 
   <div id="tab-equipos" class="panel">
@@ -320,6 +359,7 @@ let db=null;
 let filter='all';
 let debounceTimer=null;
 let lang='es';
+let viewMode='grid';
 
 // ── LANGUAGE ──────────────────────────────────────────────────────────
 function t(key){return TRANSLATIONS[lang][key]||TRANSLATIONS.es[key];}
@@ -360,6 +400,17 @@ function updateAllText(){
   document.getElementById('setupBtn').textContent=t('setupBtn');
 }
 
+// ── VIEW MODE ─────────────────────────────────────────────────────────
+window.setViewMode=function(mode){
+  viewMode=mode;
+  localStorage.setItem('panini_viewMode',viewMode);
+  document.getElementById('viewGridBtn').classList.toggle('active',viewMode==='grid');
+  document.getElementById('viewListBtn').classList.toggle('active',viewMode==='list');
+  document.getElementById('grid').style.display=viewMode==='grid'?'grid':'none';
+  document.getElementById('listView').style.display=viewMode==='list'?'block':'none';
+  renderGrid();
+};
+
 // ── CONFIG ─────────────────────────────────────────────────────────────
 function getConfig(){try{return JSON.parse(localStorage.getItem('fbcfg')||'null');}catch(e){return null;}}
 function saveConfig(){
@@ -375,6 +426,8 @@ window.showSetup=showSetup;
 // ── INIT ────────────────────────────────────────────────────────────
 const savedLang=localStorage.getItem('panini_lang');
 if(savedLang)lang=savedLang;
+const savedViewMode=localStorage.getItem('panini_viewMode');
+if(savedViewMode)viewMode=savedViewMode;
 
 const cfg=getConfig();
 if(!cfg){
@@ -385,6 +438,10 @@ if(!cfg){
   updateAllText();
   document.getElementById('langES').classList.toggle('active',lang==='es');
   document.getElementById('langEN').classList.toggle('active',lang==='en');
+  document.getElementById('viewGridBtn').classList.toggle('active',viewMode==='grid');
+  document.getElementById('viewListBtn').classList.toggle('active',viewMode==='list');
+  document.getElementById('grid').style.display=viewMode==='grid'?'grid':'none';
+  document.getElementById('listView').style.display=viewMode==='list'?'block':'none';
   const app=initializeApp({apiKey:cfg.apiKey,projectId:cfg.projectId,appId:cfg.appId,databaseURL:`https://${cfg.projectId}-default-rtdb.firebaseio.com`});
   db=getDatabase(app);
   const colRef=ref(db,'album/collection');
@@ -471,17 +528,49 @@ function renderGrid(){
   if(filter==='missing')list=list.filter(s=>!owned(s.id));
   if(filter==='owned')list=list.filter(s=>owned(s.id));
   if(filter==='dup')list=list.filter(s=>dup(s.id));
+  
   document.getElementById('cntLabel').textContent=t('showingLabel')+' '+list.length+' '+t('figuritasLabel');
-  document.getElementById('grid').innerHTML=list.map(s=>{
-    const o=owned(s.id),d=dup(s.id),c=cnt(s.id);
-    return`<div class="card${d?' dup':o?' owned':''}" onclick="toggle('${s.id}')">
-      ${c>0?`<span class="minus-btn" onclick="rem('${s.id}',event)">−</span>`:''}
-      ${d?`<span class="dup-badge">×${c}</span>`:s.foil&&!o?`<span class="foil-dot"></span>`:''}
-      <div class="card-check">${o?'✅':'⬜'}</div>
-      <div class="card-id">${s.id}</div>
-      <div class="card-name">${s.name}</div>
-    </div>`;
-  }).join('');
+  
+  if(viewMode==='grid'){
+    document.getElementById('grid').innerHTML=list.map(s=>{
+      const o=owned(s.id),d=dup(s.id),c=cnt(s.id);
+      return`<div class="card${d?' dup':o?' owned':''}" onclick="toggle('${s.id}')">
+        ${c>0?`<span class="minus-btn" onclick="rem('${s.id}',event)">−</span>`:''}
+        ${d?`<span class="dup-badge">×${c}</span>`:s.foil&&!o?`<span class="foil-dot"></span>`:''}
+        <div class="card-check">${o?'✅':'⬜'}</div>
+        <div class="card-id">${s.id}</div>
+        <div class="card-name">${s.name}</div>
+      </div>`;
+    }).join('');
+  } else {
+    const grouped={};
+    list.forEach(s=>{
+      if(!grouped[s.team])grouped[s.team]=[];
+      grouped[s.team].push(s);
+    });
+    const teamOrder=TEAMS.filter(t_name=>grouped[t_name]);
+    document.getElementById('listView').innerHTML=teamOrder.map(t_name=>{
+      const stickers=grouped[t_name];
+      return`<div class="list-country">
+        <div class="list-country-header">${t_name}</div>
+        ${stickers.map(s=>{
+          const o=owned(s.id),d=dup(s.id),c=cnt(s.id);
+          return`<div class="list-item">
+            <div class="list-item-left">
+              <div class="list-status">${o?'✅':'⬜'}</div>
+              <div class="list-id">${s.id}</div>
+              <div class="list-name">${s.name}</div>
+            </div>
+            <div class="list-actions">
+              ${d?`<span class="list-count">×${c}</span>`:''}
+              ${c>0?`<button class="list-btn" onclick="rem('${s.id}',event)">−</button>`:''}
+              <button class="list-btn" onclick="toggle('${s.id}')">+</button>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>`;
+    }).join('');
+  }
   updateHeader();
 }
 
