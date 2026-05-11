@@ -619,34 +619,111 @@
         color: var(--text2);
         cursor: pointer;
         z-index: 200
+    }/* PRINT VIEW */
+    .print-view {
+        padding: 0 16px 80px
+    }
+
+    .print-view-inner {
+        display: none
+    }
+
+    @media screen {
+        .print-view-inner {
+            display: block
+        }
+    }
+
+    .pv-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text2);
+        padding: 10px 0 6px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 10px
+    }
+
+    .pv-team-block {
+        margin-bottom: 12px;
+        break-inside: avoid
+    }
+
+    .pv-team-name {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--blue);
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        margin-bottom: 4px
+    }
+
+    .pv-codes {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px
+    }
+
+    .pv-code {
+        font-size: 11px;
+        background: var(--bg3);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 2px 6px;
+        color: var(--text);
+        white-space: nowrap
+    }
+
+    .pv-name {
+        font-size: 10px;
+        color: var(--text2);
+        margin-left: 2px
     }/* PRINT */
     @media print {
-        .header-right, .tabs, .filters, .config-link, .list-actions, .act-btn, .minus-btn, .dup-badge {
+        .header, .tabs, .filters, .config-link, .grid, .list-view, .panel:not(#tab-album) {
             display: none !important
         }
 
-        .country-header {
-            position: static;
-            background: #fff;
-            color: #000
+        #tab-album {
+            display: block !important
         }
 
-        .list-table td, .list-table th {
-            color: #000;
-            border-color: #ccc
+        .print-view {
+            display: block !important;
+            padding: 0
         }
 
         body {
             background: #fff;
+            color: #000;
+            font-size: 11px
+        }
+
+        .pv-title {
+            color: #333;
+            border-color: #ccc
+        }
+
+        .pv-team-name {
+            color: #1a56db
+        }
+
+        .pv-code {
+            background: #f5f5f5;
+            border-color: #ccc;
             color: #000
         }
 
-        .list-row.owned {
-            background: #e8f4e8
+        .pv-name {
+            color: #555
         }
 
-        .list-row.dup {
-            background: #fff3e0
+        .pv-team-block {
+            page-break-inside: avoid
+        }
+
+        @page {
+            margin: 1cm;
+            size: letter
         }
     }/* RESPONSIVE */
     @media (min-width: 768px) {
@@ -795,6 +872,7 @@
                     <div class="view-btns">
                         <button class="vbtn active" id="vbtn-grid" onclick="setView('grid')" title="Grid">⊞</button>
                         <button class="vbtn" id="vbtn-list" onclick="setView('list')" title="List">☰</button>
+                        <button class="vbtn" id="vbtn-print" onclick="setView('print')" title="Print" style="font-size:14px">🖨️</button>
                     </div>
                 </div>
             </div>
@@ -973,6 +1051,7 @@
         localStorage.setItem('viewMode', v);
         document.getElementById('vbtn-grid').classList.toggle('active', v === 'grid');
         document.getElementById('vbtn-list').classList.toggle('active', v === 'list');
+        document.getElementById('vbtn-print').classList.toggle('active', v === 'print');
         renderAlbum();
     };
 
@@ -1111,8 +1190,10 @@
         populateTeamSelect();
         if (viewMode === 'grid') {
             renderGrid(list);
-        } else {
+        } else if (viewMode === 'list') {
             renderList(list);
+        } else {
+            renderPrint(list);
         }
     };
 
@@ -1172,6 +1253,45 @@
         '</div>';
     }
 
+
+    function renderPrint(list) {
+        const t = T[lang];
+        // Group by team
+        const teamMap = {};
+        list.forEach(s => {
+            if (!teamMap[s.team])
+                teamMap[s.team] = [];
+            teamMap[s.team].push(s);
+        });
+        const teams = Object.keys(teamMap);
+        const total = list.length;
+        const now = new Date().toLocaleDateString(lang === 'es' ? 'es-AR' : 'en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        if (teams.length === 0) {
+            document.getElementById('albumContent').innerHTML = '<div class="print-view"><p style="padding:20px;color:var(--text2)">' +
+            (lang === 'es' ? '¡No hay figuritas que mostrar!' : 'No stickers to show!') + '</p></div>';
+            return;
+        }
+        document.getElementById('albumContent').innerHTML =
+        '<div class="print-view">' +
+        '<div class="pv-title">' +
+        (lang === 'es' ? '📋 Figuritas faltantes: ' + total + ' · ' + now : '📋 Missing stickers: ' + total + ' · ' + now) +
+        ' &nbsp;<button onclick="window.print()" style="padding:4px 12px;border-radius:6px;border:1px solid var(--border);background:var(--blue);color:#fff;font-size:12px;cursor:pointer;margin-left:8px">' + (lang === 'es' ? '🖨️ Imprimir' : '🖨️ Print') + '</button>' +
+        '</div>' +
+        '<div style="column-count:3;column-gap:16px;margin-top:8px">' +
+        teams.map(team => {
+            const items = teamMap[team];
+            return `<div class="pv-team-block">
+                    <div class="pv-team-name">${team} (${items.length})</div>
+                    <div class="pv-codes">${items.map(s => `<span class="pv-code">${s.id}<span class="pv-name">${s.name.length > 14 ? s.name.substring(0, 13) + '…' : s.name}</span></span>`).join('')}</div>
+                  </div>`;
+        }).join('') +
+        '</div></div>';
+    }
+
     function renderTeams() {
         const t = T[lang];
         document.getElementById('teamList').innerHTML = TEAMS.map(team => {
@@ -1222,3 +1342,4 @@
     </script>
 </body>
 </html>
+
