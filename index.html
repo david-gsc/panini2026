@@ -1,611 +1,1224 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Álbum Panini FIFA 2026</title>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg: #0a0e1a; --bg2: #111827; --bg3: #1a2035;
-    --border: #2a3060; --text: #e2e8f0; --text2: #94a3b8;
-    --blue: #3b82f6; --blue-bg: rgba(59,130,246,0.12);
-    --orange: #f97316; --orange-bg: rgba(249,115,22,0.12);
-    --red: #ef4444; --green: #22c55e;
-    --radius: 10px;
-  }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: var(--bg); color: var(--text); min-height: 100vh; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Álbum Panini FIFA 2026</title>
+    <style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0
+    }
 
-  /* HEADER */
-  .header { background: var(--bg2); border-bottom: 1px solid var(--border);
-    padding: 16px 20px; position: sticky; top: 0; z-index: 100; }
-  .header-top { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-  .header-title { font-size: 18px; font-weight: 700; }
-  .header-sub { font-size: 12px; color: var(--text2); }
-  .header-controls { display: flex; gap: 10px; margin-left: auto; align-items: center; }
-  .lang-btn { padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border);
-    background: var(--bg3); color: var(--text2); font-size: 11px; font-weight: 600;
-    cursor: pointer; transition: all .15s; }
-  .lang-btn.active { background: var(--blue); color: #fff; border-color: var(--blue); }
-  .sync-badge { font-size: 11px; padding: 4px 10px;
-    border-radius: 99px; font-weight: 600; }
-  .sync-ok { background: rgba(34,197,94,0.15); color: #22c55e; }
-  .sync-off { background: rgba(239,68,68,0.15); color: #ef4444; }
+    :root {
+        --bg: #0a0e1a;
+        --bg2: #111827;
+        --bg3: #1a2035;
+        --border: #2a3060;
+        --text: #e2e8f0;
+        --text2: #94a3b8;
+        --blue: #3b82f6;
+        --blue-bg: rgba(59, 130, 246, 0.12);
+        --orange: #f97316;
+        --orange-bg: rgba(249, 115, 22, 0.12);
+        --red: #ef4444;
+        --green: #22c55e;
+        --radius: 10px;
+    }
 
-  .progress-bar { height: 8px; background: var(--bg3); border-radius: 99px; overflow: hidden; margin-bottom: 8px; }
-  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--blue), #8b5cf6);
-    border-radius: 99px; transition: width .4s ease; }
-  .progress-info { display: flex; justify-content: space-between; font-size: 12px; color: var(--text2); }
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh
+    }/* HEADER */
+    .header {
+        background: var(--bg2);
+        border-bottom: 1px solid var(--border);
+        padding: 16px 20px;
+        position: sticky;
+        top: 0;
+        z-index: 100
+    }
 
-  .stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-top: 12px; }
-  .stat { background: var(--bg3); border-radius: var(--radius); padding: 10px; text-align: center; }
-  .stat-n { font-size: 20px; font-weight: 700; }
-  .stat-l { font-size: 11px; color: var(--text2); margin-top: 2px; }
+    .header-top {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 12px;
+        flex-wrap: wrap
+    }
 
-  /* TABS */
-  .tabs { display: flex; background: var(--bg2); border-bottom: 1px solid var(--border); }
-  .tab { flex: 1; padding: 12px 8px; font-size: 13px; font-weight: 600;
-    border: none; background: none; color: var(--text2); cursor: pointer;
-    border-bottom: 2px solid transparent; transition: all .2s; }
-  .tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+    .header-title {
+        font-size: 18px;
+        font-weight: 700
+    }
 
-  /* FILTERS */
-  .filters { padding: 12px 16px; background: var(--bg2); border-bottom: 1px solid var(--border); }
-  .search { width: 100%; background: var(--bg3); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 9px 14px; color: var(--text);
-    font-size: 14px; margin-bottom: 10px; }
-  .search::placeholder { color: var(--text2); }
-  .team-select { width: 100%; background: var(--bg3); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 9px 14px; color: var(--text); font-size: 13px; margin-bottom: 10px; }
-  .filter-controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; align-items: center; }
-  .view-toggle { display: flex; gap: 4px; }
-  .view-btn { padding: 5px 10px; border-radius: 6px; border: 1px solid var(--border);
-    background: var(--bg3); color: var(--text2); font-size: 12px; font-weight: 600;
-    cursor: pointer; transition: all .15s; }
-  .view-btn.active { background: var(--blue); color: #fff; border-color: var(--blue); }
-  .filter-btns { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; }
-  .fbtn { padding: 5px 12px; border-radius: 99px; border: 1px solid var(--border);
-    background: none; color: var(--text2); font-size: 12px; font-weight: 600; cursor: pointer; transition: all .15s; }
-  .fbtn.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+    .header-sub {
+        font-size: 12px;
+        color: var(--text2)
+    }
 
-  /* GRID VIEW */
-  .count-label { padding: 6px 16px; font-size: 12px; color: var(--text2); }
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(95px, 1fr));
-    gap: 8px; padding: 8px 16px 80px; }
+    .header-right {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap
+    }
 
-  .card { border-radius: var(--radius); border: 1.5px solid var(--border);
-    background: var(--bg2); padding: 10px 8px; cursor: pointer;
-    text-align: center; position: relative; transition: all .15s; user-select: none; }
-  .card:active { transform: scale(0.96); }
-  .card.owned { border-color: var(--blue); background: var(--blue-bg); }
-  .card.dup { border-color: var(--orange); background: var(--orange-bg); }
-  .card-check { font-size: 18px; margin-bottom: 3px; }
-  .card-id { font-size: 11px; font-weight: 700; color: var(--text2); }
-  .card.owned .card-id { color: var(--blue); }
-  .card.dup .card-id { color: var(--orange); }
-  .card-name { font-size: 10px; color: var(--text2); line-height: 1.25; margin-top: 2px; }
-  .dup-badge { position: absolute; top: 3px; right: 3px;
-    background: var(--orange); color: #fff; font-size: 9px; font-weight: 700;
-    border-radius: 99px; padding: 1px 5px; }
-  .foil-dot { position: absolute; top: 4px; left: 4px;
-    width: 6px; height: 6px; border-radius: 50%; background: #fbbf24; }
-  .minus-btn { position: absolute; top: 3px; left: 3px;
-    width: 16px; height: 16px; border-radius: 50%;
-    background: var(--bg3); border: 1px solid var(--border);
-    font-size: 12px; cursor: pointer; color: var(--text2);
-    display: flex; align-items: center; justify-content: center; line-height: 1; }
+    .sync-badge {
+        font-size: 11px;
+        padding: 4px 10px;
+        border-radius: 99px;
+        font-weight: 600;
+        white-space: nowrap
+    }
 
-  /* LIST VIEW */
-  .list-view { padding: 16px 80px 16px; }
-  .list-country { margin-bottom: 24px; }
-  .list-country-header { font-size: 14px; font-weight: 700; color: var(--blue); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
-  .list-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; font-size: 12px; border-bottom: 1px solid rgba(42,48,96,0.3); }
-  .list-item-left { display: flex; align-items: center; gap: 12px; flex: 1; }
-  .list-status { font-size: 14px; width: 20px; text-align: center; }
-  .list-id { font-weight: 700; color: var(--text2); min-width: 50px; }
-  .list-name { color: var(--text2); flex: 1; }
-  .list-actions { display: flex; gap: 8px; align-items: center; }
-  .list-count { font-size: 11px; color: var(--orange); font-weight: 700; min-width: 40px; }
-  .list-btn { padding: 2px 8px; font-size: 11px; border-radius: 4px; border: 1px solid var(--border);
-    background: var(--bg3); color: var(--text2); cursor: pointer; }
+    .sync-ok {
+        background: rgba(34, 197, 94, 0.15);
+        color: #22c55e
+    }
 
-  /* TEAM LIST */
-  .team-item { padding: 12px 16px; border-bottom: 1px solid var(--border); }
-  .team-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-  .team-name { font-size: 14px; font-weight: 600; }
-  .team-count { font-size: 13px; color: var(--text2); }
-  .team-bar { height: 4px; background: var(--bg3); border-radius: 99px; overflow: hidden; }
-  .team-fill { height: 100%; background: var(--blue); border-radius: 99px; transition: width .3s; }
-  .team-fill.complete { background: var(--green); }
+    .sync-off {
+        background: rgba(239, 68, 68, 0.15);
+        color: #ef4444
+    }
 
-  /* DUPLICATES */
-  .dup-item { display: flex; align-items: center; justify-content: space-between;
-    padding: 12px 16px; border-bottom: 1px solid var(--border); }
-  .dup-id { font-size: 14px; font-weight: 700; color: var(--orange); }
-  .dup-name { font-size: 12px; color: var(--text2); margin-top: 2px; }
-  .dup-count { background: var(--orange-bg); color: var(--orange);
-    border: 1px solid var(--orange); font-size: 13px; font-weight: 700;
-    padding: 4px 12px; border-radius: 99px; }
-  .minus-dup { padding: 4px 10px; font-size: 14px; border-radius: 6px;
-    border: 1px solid var(--border); background: var(--bg3); color: var(--text2); cursor: pointer; }
+    .lang-btns {
+        display: flex;
+        gap: 4px
+    }
 
-  /* PANELS */
-  .panel { display: none; }
-  .panel.active { display: block; }
+    .lang-btn {
+        padding: 4px 10px;
+        border-radius: 99px;
+        border: 1px solid var(--border);
+        background: none;
+        color: var(--text2);
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all .15s
+    }
 
-  /* SETUP SCREEN */
-  .setup { max-width: 480px; margin: 40px auto; padding: 20px; }
-  .setup h2 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
-  .setup p { color: var(--text2); font-size: 14px; line-height: 1.6; margin-bottom: 16px; }
-  .setup input { width: 100%; background: var(--bg3); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 10px 14px; color: var(--text);
-    font-size: 13px; margin-bottom: 10px; font-family: monospace; }
-  .setup-btn { width: 100%; padding: 12px; background: var(--blue);
-    color: #fff; border: none; border-radius: var(--radius);
-    font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 4px; }
-  .setup-btn:hover { background: #2563eb; }
-  .config-link { position: fixed; bottom: 16px; right: 16px;
-    background: var(--bg3); border: 1px solid var(--border);
-    border-radius: 99px; padding: 8px 14px; font-size: 12px;
-    color: var(--text2); cursor: pointer; }
+    .lang-btn.active {
+        background: var(--blue);
+        color: #fff;
+        border-color: var(--blue)
+    }
 
-  /* PRINT STYLES */
-  @media print {
-    body { background: white; color: black; }
-    .header, .tabs, .filters, .config-link, .view-toggle, .filter-btns, .search, .team-select, .list-btn, .list-actions { display: none !important; }
-    .list-view { padding: 0; }
-    .list-country-header { color: black; border-color: #ccc; }
-    .list-item { border-color: #ddd; }
-    .list-item-left { gap: 10px; }
-    .count-label { display: none; }
-  }
+    .progress-bar {
+        height: 8px;
+        background: var(--bg3);
+        border-radius: 99px;
+        overflow: hidden;
+        margin-bottom: 8px
+    }
 
-  /* RESPONSIVE */
-  @media (min-width: 768px) {
-    .header { padding: 20px 32px; }
-    .header-title { font-size: 22px; }
-    .filters { padding: 14px 32px; }
-    .grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); padding: 10px 32px 80px; gap: 10px; }
-    .count-label { padding: 8px 32px; }
-    .team-item, .dup-item { padding: 14px 32px; }
-    .stats { gap: 12px; }
-    .stat-n { font-size: 24px; }
-    .list-view { padding: 16px 32px 80px; }
-  }
-  @media (min-width: 1024px) {
-    .app-wrapper { max-width: 900px; margin: 0 auto; box-shadow: 0 0 60px rgba(0,0,0,0.5); min-height: 100vh; }
-    .grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
-  }
-</style>
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--blue), #8b5cf6);
+        border-radius: 99px;
+        transition: width .4s ease
+    }
+
+    .progress-info {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        color: var(--text2)
+    }
+
+    .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-top: 12px
+    }
+
+    .stat {
+        background: var(--bg3);
+        border-radius: var(--radius);
+        padding: 10px;
+        text-align: center
+    }
+
+    .stat-n {
+        font-size: 20px;
+        font-weight: 700
+    }
+
+    .stat-l {
+        font-size: 11px;
+        color: var(--text2);
+        margin-top: 2px
+    }/* TABS */
+    .tabs {
+        display: flex;
+        background: var(--bg2);
+        border-bottom: 1px solid var(--border)
+    }
+
+    .tab {
+        flex: 1;
+        padding: 12px 8px;
+        font-size: 13px;
+        font-weight: 600;
+        border: none;
+        background: none;
+        color: var(--text2);
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: all .2s
+    }
+
+    .tab.active {
+        color: var(--blue);
+        border-bottom-color: var(--blue)
+    }/* FILTERS */
+    .filters {
+        padding: 12px 16px;
+        background: var(--bg2);
+        border-bottom: 1px solid var(--border)
+    }
+
+    .search {
+        width: 100%;
+        background: var(--bg3);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 9px 14px;
+        color: var(--text);
+        font-size: 14px;
+        margin-bottom: 10px
+    }
+
+    .search::placeholder {
+        color: var(--text2)
+    }
+
+    .team-select {
+        width: 100%;
+        background: var(--bg3);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 9px 14px;
+        color: var(--text);
+        font-size: 13px;
+        margin-bottom: 10px
+    }
+
+    .filter-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px
+    }
+
+    .filter-btns {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap
+    }
+
+    .fbtn {
+        padding: 5px 12px;
+        border-radius: 99px;
+        border: 1px solid var(--border);
+        background: none;
+        color: var(--text2);
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all .15s
+    }
+
+    .fbtn.active {
+        background: var(--blue);
+        color: #fff;
+        border-color: var(--blue)
+    }
+
+    .view-btns {
+        display: flex;
+        gap: 4px;
+        flex-shrink: 0
+    }
+
+    .vbtn {
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        background: none;
+        color: var(--text2);
+        font-size: 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all .15s
+    }
+
+    .vbtn.active {
+        background: var(--blue);
+        color: #fff;
+        border-color: var(--blue)
+    }/* GRID VIEW */
+    .count-label {
+        padding: 6px 16px;
+        font-size: 12px;
+        color: var(--text2)
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(95px, 1fr));
+        gap: 8px;
+        padding: 8px 16px 80px
+    }
+
+    .card {
+        border-radius: var(--radius);
+        border: 1.5px solid var(--border);
+        background: var(--bg2);
+        padding: 10px 8px;
+        cursor: pointer;
+        text-align: center;
+        position: relative;
+        transition: all .15s;
+        user-select: none
+    }
+
+    .card:active {
+        transform: scale(0.96)
+    }
+
+    .card.owned {
+        border-color: var(--blue);
+        background: var(--blue-bg)
+    }
+
+    .card.dup {
+        border-color: var(--orange);
+        background: var(--orange-bg)
+    }
+
+    .card-check {
+        font-size: 18px;
+        margin-bottom: 3px
+    }
+
+    .card-id {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--text2)
+    }
+
+    .card.owned .card-id {
+        color: var(--blue)
+    }
+
+    .card.dup .card-id {
+        color: var(--orange)
+    }
+
+    .card-name {
+        font-size: 10px;
+        color: var(--text2);
+        line-height: 1.25;
+        margin-top: 2px
+    }
+
+    .dup-badge {
+        position: absolute;
+        top: 3px;
+        right: 3px;
+        background: var(--orange);
+        color: #fff;
+        font-size: 9px;
+        font-weight: 700;
+        border-radius: 99px;
+        padding: 1px 5px
+    }
+
+    .foil-dot {
+        position: absolute;
+        top: 4px;
+        left: 4px;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #fbbf24
+    }
+
+    .minus-btn {
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: var(--bg3);
+        border: 1px solid var(--border);
+        font-size: 12px;
+        cursor: pointer;
+        color: var(--text2);
+        display: flex;
+        align-items: center;
+        justify-content: center
+    }/* LIST VIEW */
+    .list-view {
+        padding: 0 0 80px
+    }
+
+    .country-section {
+        border-bottom: 1px solid var(--border)
+    }
+
+    .country-header {
+        padding: 10px 16px;
+        background: var(--bg3);
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text2);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0
+    }
+
+    .list-table {
+        width: 100%;
+        border-collapse: collapse
+    }
+
+    .list-table th {
+        padding: 7px 12px;
+        font-size: 11px;
+        color: var(--text2);
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+        background: var(--bg2)
+    }
+
+    .list-table td {
+        padding: 8px 12px;
+        font-size: 13px;
+        border-bottom: 1px solid var(--border);
+        vertical-align: middle
+    }
+
+    .list-table tr:last-child td {
+        border-bottom: none
+    }
+
+    .list-row.owned {
+        background: var(--blue-bg)
+    }
+
+    .list-row.dup {
+        background: var(--orange-bg)
+    }
+
+    .list-id {
+        font-weight: 700;
+        font-size: 12px;
+        color: var(--text2)
+    }
+
+    .list-row.owned .list-id {
+        color: var(--blue)
+    }
+
+    .list-row.dup .list-id {
+        color: var(--orange)
+    }
+
+    .list-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        white-space: nowrap
+    }
+
+    .act-btn {
+        width: 26px;
+        height: 26px;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        background: var(--bg3);
+        color: var(--text);
+        font-size: 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700
+    }
+
+    .act-btn.add {
+        border-color: var(--blue);
+        color: var(--blue)
+    }
+
+    .act-btn.sub {
+        border-color: var(--border);
+        color: var(--text2)
+    }
+
+    .dup-pill {
+        background: var(--orange);
+        color: #fff;
+        font-size: 10px;
+        font-weight: 700;
+        border-radius: 99px;
+        padding: 2px 6px
+    }/* TEAM LIST TAB */
+    .team-item {
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border)
+    }
+
+    .team-header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 6px
+    }
+
+    .team-name-txt {
+        font-size: 14px;
+        font-weight: 600
+    }
+
+    .team-count-txt {
+        font-size: 13px;
+        color: var(--text2)
+    }
+
+    .team-bar {
+        height: 4px;
+        background: var(--bg3);
+        border-radius: 99px;
+        overflow: hidden
+    }
+
+    .team-fill {
+        height: 100%;
+        background: var(--blue);
+        border-radius: 99px;
+        transition: width .3s
+    }
+
+    .team-fill.complete {
+        background: var(--green)
+    }/* DUPLICATES TAB */
+    .dup-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border)
+    }
+
+    .dup-id-txt {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--orange)
+    }
+
+    .dup-name-txt {
+        font-size: 12px;
+        color: var(--text2);
+        margin-top: 2px
+    }
+
+    .dup-count-pill {
+        background: var(--orange-bg);
+        color: var(--orange);
+        border: 1px solid var(--orange);
+        font-size: 13px;
+        font-weight: 700;
+        padding: 4px 12px;
+        border-radius: 99px
+    }
+
+    .minus-dup {
+        padding: 4px 10px;
+        font-size: 14px;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        background: var(--bg3);
+        color: var(--text2);
+        cursor: pointer
+    }/* PANELS */
+    .panel {
+        display:none
+    }
+
+    .panel.active {
+        display: block
+    }/* SETUP */
+    .setup {
+        max-width: 480px;
+        margin: 40px auto;
+        padding: 20px
+    }
+
+    .setup h2 {
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 8px
+    }
+
+    .setup p {
+        color: var(--text2);
+        font-size: 14px;
+        line-height: 1.6;
+        margin-bottom: 16px
+    }
+
+    .setup input {
+        width: 100%;
+        background: var(--bg3);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 10px 14px;
+        color: var(--text);
+        font-size: 13px;
+        margin-bottom: 10px;
+        font-family: monospace
+    }
+
+    .setup-btn {
+        width: 100%;
+        padding: 12px;
+        background: var(--blue);
+        color: #fff;
+        border: none;
+        border-radius: var(--radius);
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        margin-top: 4px
+    }
+
+    .config-link {
+        position: fixed;
+        bottom: 16px;
+        right: 16px;
+        background: var(--bg3);
+        border: 1px solid var(--border);
+        border-radius: 99px;
+        padding: 8px 14px;
+        font-size: 12px;
+        color: var(--text2);
+        cursor: pointer;
+        z-index: 200
+    }/* PRINT */
+    @media print {
+        .header-right, .tabs, .filters, .config-link, .list-actions, .act-btn, .minus-btn, .dup-badge {
+            display: none !important
+        }
+
+        .country-header {
+            position: static;
+            background: #fff;
+            color: #000
+        }
+
+        .list-table td, .list-table th {
+            color: #000;
+            border-color: #ccc
+        }
+
+        body {
+            background: #fff;
+            color: #000
+        }
+
+        .list-row.owned {
+            background: #e8f4e8
+        }
+
+        .list-row.dup {
+            background: #fff3e0
+        }
+    }/* RESPONSIVE */
+    @media (min-width: 768px) {
+        .header {
+            padding: 20px 32px
+        }
+
+        .header-title {
+            font-size: 22px
+        }
+
+        .filters {
+            padding: 14px 32px
+        }
+
+        .grid {
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            padding: 10px 32px 80px;
+            gap: 10px
+        }
+
+        .count-label {
+            padding: 8px 32px
+        }
+
+        .team-item, .dup-item {
+            padding: 14px 32px
+        }
+
+        .list-table td, .list-table th {
+            padding: 9px 20px
+        }
+
+        .country-header {
+            padding: 10px 20px
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .app-wrapper {
+            max-width: 960px;
+            margin: 0 auto;
+            box-shadow: 0 0 60px rgba(0, 0, 0, 0.5);
+            min-height: 100vh
+        }
+
+        .grid {
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr))
+        }
+    }
+    </style>
 </head>
 <body>
 
-<!-- SETUP SCREEN -->
-<div id="setupScreen" class="setup" style="display:none">
-  <div style="font-size:40px; margin-bottom:16px">⚽</div>
-  <h2 id="setupTitle">Configurar Firebase</h2>
-  <p id="setupDesc">Para sincronizar tu álbum entre dispositivos, pegá los datos de tu proyecto Firebase. Solo necesitás hacer esto una vez.</p>
-  <p style="background:var(--bg3);padding:12px;border-radius:8px;font-size:12px;color:var(--text2)">
-    <span id="setupStep1">1. Andá a</span> <strong style="color:var(--text)">console.firebase.google.com</strong><br>
-    <span id="setupStep2">2. Creá un proyecto → Agregá una app Web</span><br>
-    <span id="setupStep3">3. Copiá el <strong style="color:var(--text)">firebaseConfig</strong> y pegá cada valor abajo</span>
-  </p>
-  <input id="cfg-apiKey" placeholder="apiKey" />
-  <input id="cfg-projectId" placeholder="projectId" />
-  <input id="cfg-appId" placeholder="appId" />
-  <button class="setup-btn" id="setupBtn" onclick="saveConfig()">Guardar y conectar</button>
-</div>
+    <div id="setupScreen" class="setup" style="display:none">
+        <div style="font-size:40px;margin-bottom:16px">⚽</div>
+        <h2 id="setup-title">Configurar Firebase</h2>
+        <p id="setup-desc">Para sincronizar tu álbum entre dispositivos, pegá los datos de tu proyecto Firebase.</p>
+        <p id="setup-steps" style="background:var(--bg3);padding:12px;border-radius:8px;font-size:12px;color:var(--text2)">
 
-<!-- MAIN APP -->
-<div id="mainApp" class="app-wrapper" style="display:none">
-  <div class="header">
-    <div class="header-top">
-      <span style="font-size:30px">⚽</span>
-      <div>
-        <div class="header-title" id="headerTitle">FIFA World Cup 2026</div>
-        <div class="header-sub" id="headerSub">Panini Sticker Tracker</div>
-      </div>
-      <div class="header-controls">
-        <button class="lang-btn active" onclick="setLang('es')" id="langES">ES</button>
-        <button class="lang-btn" onclick="setLang('en')" id="langEN">EN</button>
-        <span id="syncBadge" class="sync-badge sync-off">⏳ Conectando...</span>
-      </div>
-    </div>
-    <div class="progress-bar"><div class="progress-fill" id="progFill" style="width:0%"></div></div>
-    <div class="progress-info">
-      <span id="progLabel">Cargando...</span>
-      <span id="progPct" style="font-weight:700">0%</span>
-    </div>
-    <div class="stats">
-      <div class="stat"><div class="stat-n" id="sOwned" style="color:var(--blue)">0</div><div class="stat-l" id="statOwned">tengo</div></div>
-      <div class="stat"><div class="stat-n" id="sMiss" style="color:var(--red)">0</div><div class="stat-l" id="statMiss">faltan</div></div>
-      <div class="stat"><div class="stat-n" id="sDup" style="color:var(--orange)">0</div><div class="stat-l" id="statDup">repetidas</div></div>
-    </div>
-  </div>
+                1. Andá a 
+            <strong style="color:var(--text)">console.firebase.google.com</strong>
+            <br>
 
-  <div class="tabs">
-    <button class="tab active" onclick="showTab('album',this)"><span id="tabAlbum">📋 Álbum</span></button>
-    <button class="tab" onclick="showTab('equipos',this)"><span id="tabTeams">📊 Equipos</span></button>
-    <button class="tab" onclick="showTab('repetidas',this)"><span id="tabDups">♻️ Repetidas</span></button>
-  </div>
+                2. Creá un proyecto → Agregá una app Web
+            <br>
 
-  <div id="tab-album" class="panel active">
-    <div class="filters">
-      <input class="search" id="srch" placeholder="🔍 Buscar código o jugador..." oninput="renderGrid()">
-      <select class="team-select" id="teamSel" onchange="renderGrid()">
-        <option value="">🌐 Todos los equipos</option>
-      </select>
-      <div class="filter-controls">
-        <div class="view-toggle">
-          <button class="view-btn active" id="viewGridBtn" onclick="setViewMode('grid')" title="Grid view">⊞</button>
-          <button class="view-btn" id="viewListBtn" onclick="setViewMode('list')" title="List view">☰</button>
+                3. Copiá el 
+            <strong style="color:var(--text)">firebaseConfig</strong>
+             y pegá cada valor abajo
+              
+        </p>
+        <input id="cfg-apiKey" placeholder="apiKey"/>
+        <input id="cfg-projectId" placeholder="projectId"/>
+        <input id="cfg-appId" placeholder="appId"/>
+        <button class="setup-btn" id="setup-btn" onclick="saveConfig()">Guardar y conectar</button>
+    </div>
+
+    <div id="mainApp" class="app-wrapper" style="display:none">
+        <div class="header">
+            <div class="header-top">
+                <span style="font-size:30px">⚽</span>
+                <div>
+                    <div class="header-title">FIFA World Cup 2026</div>
+                    <div class="header-sub">Panini Sticker Tracker</div>
+                </div>
+                <div class="header-right">
+                    <div class="lang-btns">
+                        <button class="lang-btn active" onclick="setLang('es',this)">ES</button>
+                        <button class="lang-btn" onclick="setLang('en',this)">EN</button>
+                    </div>
+                    <span id="syncBadge" class="sync-badge sync-off">⏳</span>
+                </div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progFill" style="width:0%"></div>
+            </div>
+            <div class="progress-info">
+                <span id="progLabel">...</span>
+                <span id="progPct" style="font-weight:700">0%</span>
+            </div>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-n" id="sOwned" style="color:var(--blue)">0</div>
+                    <div class="stat-l" id="lOwned">tengo</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-n" id="sMiss" style="color:var(--red)">0</div>
+                    <div class="stat-l" id="lMiss">faltan</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-n" id="sDup" style="color:var(--orange)">0</div>
+                    <div class="stat-l" id="lDup">repetidas</div>
+                </div>
+            </div>
         </div>
-        <div class="filter-btns">
-          <button class="fbtn active" onclick="setFilter('all',this)" id="filterAll">Todas</button>
-          <button class="fbtn" onclick="setFilter('missing',this)" id="filterMissing">Faltan</button>
-          <button class="fbtn" onclick="setFilter('owned',this)" id="filterOwned">Tengo</button>
-          <button class="fbtn" onclick="setFilter('dup',this)" id="filterDup">Repetidas</button>
+
+        <div class="tabs">
+            <button class="tab active" id="tab-btn-album" onclick="showTab('album',this)">
+                📋 
+                <span class="t-album">Álbum</span>
+            </button>
+            <button class="tab" id="tab-btn-equipos" onclick="showTab('equipos',this)">
+                📊 
+                <span class="t-teams">Equipos</span>
+            </button>
+            <button class="tab" id="tab-btn-repetidas" onclick="showTab('repetidas',this)">
+                ♻️ 
+                <span class="t-dups">Repetidas</span>
+            </button>
         </div>
-      </div>
+
+        <div id="tab-album" class="panel active">
+            <div class="filters">
+                <input class="search" id="srch" placeholder="🔍 Buscar código o jugador..." oninput="renderAlbum()">
+                <select class="team-select" id="teamSel" onchange="renderAlbum()">
+                    <option value="" id="opt-all-teams">🌐 Todos los equipos</option>
+                </select>
+                <div class="filter-row">
+                    <div class="filter-btns">
+                        <button class="fbtn active" id="fb-all" onclick="setFilter('all',this)">Todas</button>
+                        <button class="fbtn" id="fb-miss" onclick="setFilter('missing',this)">Faltan</button>
+                        <button class="fbtn" id="fb-own" onclick="setFilter('owned',this)">Tengo</button>
+                        <button class="fbtn" id="fb-dup" onclick="setFilter('dup',this)">Repetidas</button>
+                    </div>
+                    <div class="view-btns">
+                        <button class="vbtn active" id="vbtn-grid" onclick="setView('grid')" title="Grid">⊞</button>
+                        <button class="vbtn" id="vbtn-list" onclick="setView('list')" title="List">☰</button>
+                    </div>
+                </div>
+            </div>
+            <div class="count-label" id="cntLabel"></div>
+            <div id="albumContent"></div>
+        </div>
+
+        <div id="tab-equipos" class="panel">
+            <div id="teamList"></div>
+        </div>
+
+        <div id="tab-repetidas" class="panel">
+            <div class="count-label" id="dupLabel"></div>
+            <div id="dupList"></div>
+        </div>
+
+        <div class="config-link" onclick="showSetup()">⚙️ Config</div>
     </div>
-    <div class="count-label" id="cntLabel"></div>
-    <div class="grid" id="grid" style="display:none"></div>
-    <div class="list-view" id="listView" style="display:none"></div>
-  </div>
 
-  <div id="tab-equipos" class="panel">
-    <div id="teamList"></div>
-  </div>
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-  <div id="tab-repetidas" class="panel">
-    <div class="count-label" id="dupLabel"></div>
-    <div id="dupList"></div>
-  </div>
+    // ── TRANSLATIONS ──────────────────────────────────────────────────────────────
+    const T = {
+        es: {
+            connecting: "⏳ Conectando...",
+            synced: "✅ Sincronizado",
+            offline: "❌ Sin conexión",
+            stickers: "figuritas",
+            showing: "Mostrando",
+            loading: "Cargando...",
+            owned: "tengo",
+            missing: "faltan",
+            duplicates: "repetidas",
+            album: "Álbum",
+            teams: "Equipos",
+            dups: "Repetidas",
+            all: "Todas",
+            filterMiss: "Faltan",
+            filterOwn: "Tengo",
+            filterDup: "Repetidas",
+            allTeams: "🌐 Todos los equipos",
+            search: "🔍 Buscar código o jugador...",
+            extra: "extra",
+            noDups: "¡No tenés repetidas aún! 🎉",
+            dupCount: "figuritas repetidas para intercambiar",
+            setup_title: "Configurar Firebase",
+            setup_desc: "Para sincronizar tu álbum entre dispositivos, pegá los datos de tu proyecto Firebase.",
+            setup_steps: "1. Andá a console.firebase.google.com\n2. Creá un proyecto → Agregá una app Web\n3. Copiá el firebaseConfig y pegá cada valor abajo",
+            setup_btn: "Guardar y conectar",
+            status: "Estado",
+            id: "Código",
+            name: "Nombre",
+            actions: "Acciones",
+            complete: "completo"
+        },
+        en: {
+            connecting: "⏳ Connecting...",
+            synced: "✅ Synced",
+            offline: "❌ Offline",
+            stickers: "stickers",
+            showing: "Showing",
+            loading: "Loading...",
+            owned: "owned",
+            missing: "missing",
+            duplicates: "duplicates",
+            album: "Album",
+            teams: "Teams",
+            dups: "Duplicates",
+            all: "All",
+            filterMiss: "Missing",
+            filterOwn: "Owned",
+            filterDup: "Duplicates",
+            allTeams: "🌐 All teams",
+            search: "🔍 Search code or player...",
+            extra: "extra",
+            noDups: "No duplicates yet! 🎉",
+            dupCount: "duplicate stickers to trade",
+            setup_title: "Configure Firebase",
+            setup_desc: "To sync your album across devices, enter your Firebase project data.",
+            setup_steps: "1. Go to console.firebase.google.com\n2. Create a project → Add a Web app\n3. Copy the firebaseConfig and paste each value below",
+            setup_btn: "Save & Connect",
+            status: "Status",
+            id: "Code",
+            name: "Name",
+            actions: "Actions",
+            complete: "complete"
+        }
+    };
 
-  <div class="config-link" onclick="showSetup()" id="configLink">⚙️ Config</div>
-</div>
+    // ── STICKER DATA ──────────────────────────────────────────────────────────────
+    const RAW = "00|Panini Logo|Opening|f|FWC1|Official Emblem|Opening|f|FWC2|Official Emblem 2|Opening|f|FWC3|Official Mascots|Opening|f|FWC4|Official Slogan|Opening|f|FWC5|Official Ball|Opening|f|FWC6|Canada Host Cities|Opening|f|FWC7|Mexico Host Cities|Opening|f|FWC8|USA Host Cities|Opening|f|FWC9|Italy 1934|FIFA Museum|f|FWC10|Uruguay 1950|FIFA Museum|f|FWC11|W. Germany 1954|FIFA Museum|f|FWC12|Brazil 1962|FIFA Museum|f|FWC13|W. Germany 1974|FIFA Museum|f|FWC14|Argentina 1986|FIFA Museum|f|FWC15|Brazil 1994|FIFA Museum|f|FWC16|Brazil 2002|FIFA Museum|f|FWC17|Italy 2006|FIFA Museum|f|FWC18|Germany 2014|FIFA Museum|f|FWC19|Argentina 2022|FIFA Museum|f|MEX1|Team Logo|Mexico|f|MEX2|Luis Malagón|Mexico||MEX3|Johan Vasquez|Mexico||MEX4|Jorge Sánchez|Mexico||MEX5|Cesar Montes|Mexico||MEX6|Jesus Gallardo|Mexico||MEX7|Israel Reyes|Mexico||MEX8|Diego Lainez|Mexico||MEX9|Carlos Rodriguez|Mexico||MEX10|Edson Alvarez|Mexico||MEX11|Orbelin Pineda|Mexico||MEX12|Marcel Ruiz|Mexico||MEX13|Team Photo|Mexico||MEX14|Érick Sánchez|Mexico||MEX15|Hirving Lozano|Mexico||MEX16|Santiago Giménez|Mexico||MEX17|Raúl Jiménez|Mexico||MEX18|Alexis Vega|Mexico||MEX19|Roberto Alvarado|Mexico||MEX20|Cesar Huerta|Mexico||RSA1|Team Logo|South Africa|f|RSA2|Ronwen Williams|South Africa||RSA3|Sipho Chaine|South Africa||RSA4|Aubrey Modiba|South Africa||RSA5|Samukele Kabini|South Africa||RSA6|Mbekezeli Mbokazi|South Africa||RSA7|Khulumani Ndamane|South Africa||RSA8|Siyabonga Ngezana|South Africa||RSA9|Khuliso Mudau|South Africa||RSA10|Nkosinathi Sibisi|South Africa||RSA11|Teboho Mokoena|South Africa||RSA12|Thalente Mbatha|South Africa||RSA13|Team Photo|South Africa||RSA14|Bathasi Aubaas|South Africa||RSA15|Yaya Sithole|South Africa||RSA16|Sipho Mbule|South Africa||RSA17|Lyle Foster|South Africa||RSA18|Iqraam Rayners|South Africa||RSA19|Mohau Nkota|South Africa||RSA20|Oswin Appollis|South Africa||KOR1|Team Logo|South Korea|f|KOR2|Hyeon-woo Jo|South Korea||KOR3|Seung-Gyu Kim|South Korea||KOR4|Min-jae Kim|South Korea||KOR5|Yu-min Cho|South Korea||KOR6|Young-woo Seol|South Korea||KOR7|Han-beom Lee|South Korea||KOR8|Tae-seok Lee|South Korea||KOR9|Myung-jae Lee|South Korea||KOR10|Jae-sung Lee|South Korea||KOR11|In-beom Hwang|South Korea||KOR12|Kang-in Lee|South Korea||KOR13|Team Photo|South Korea||KOR14|Seung-ho Paik|South Korea||KOR15|Jens Castrop|South Korea||KOR16|Dongg-yeong Lee|South Korea||KOR17|Gue-sung Cho|South Korea||KOR18|Heung-min Son|South Korea||KOR19|Hee-chan Hwang|South Korea||KOR20|Hyeon-Gyu Oh|South Korea||CZE1|Team Logo|Czechia|f|CZE2|Matej Kovar|Czechia||CZE3|Jindrich Stanek|Czechia||CZE4|Ladislav Krejci|Czechia||CZE5|Vladimir Coufal|Czechia||CZE6|Jaroslav Zeleny|Czechia||CZE7|Tomas Holes|Czechia||CZE8|David Zima|Czechia||CZE9|Michal Sadilek|Czechia||CZE10|Lukas Provod|Czechia||CZE11|Lukas Cerv|Czechia||CZE12|Tomas Soucek|Czechia||CZE13|Team Photo|Czechia||CZE14|Pavel Sulc|Czechia||CZE15|Matej Vydra|Czechia||CZE16|Vasil Kusej|Czechia||CZE17|Tomas Chory|Czechia||CZE18|Vaclav Cerny|Czechia||CZE19|Adam Hlozek|Czechia||CZE20|Patrik Schick|Czechia||CAN1|Team Logo|Canada|f|CAN2|Dayne St.Clair|Canada||CAN3|Alphonso Davies|Canada||CAN4|Alistair Johnston|Canada||CAN5|Samuel Adekugbe|Canada||CAN6|Riche Larvea|Canada||CAN7|Derek Cornelius|Canada||CAN8|Moïse Bombito|Canada||CAN9|Kamal Miller|Canada||CAN10|Stephen Eustáquio|Canada||CAN11|Ismaël Koné|Canada||CAN12|Jonathan Osorio|Canada||CAN13|Team Photo|Canada||CAN14|Jacob Shaffelburg|Canada||CAN15|Mathieu Choinière|Canada||CAN16|Niko Sigur|Canada||CAN17|Tajon Buchanan|Canada||CAN18|Liam Millar|Canada||CAN19|Cyle Larin|Canada||CAN20|Jonathan David|Canada||BIH1|Team Logo|Bosnia y Herzegovina|f|BIH2|Nikola Vasilj|Bosnia y Herzegovina||BIH3|Amer Dedic|Bosnia y Herzegovina||BIH4|Sead Kolasinac|Bosnia y Herzegovina||BIH5|Tarik Muharemovic|Bosnia y Herzegovina||BIH6|Nihad Mujakic|Bosnia y Herzegovina||BIH7|Nikola Katic|Bosnia y Herzegovina||BIH8|Amir Hadziahmetovic|Bosnia y Herzegovina||BIH9|Benjamin Tahirovic|Bosnia y Herzegovina||BIH10|Armin Gigovic|Bosnia y Herzegovina||BIH11|Ivan Sunjic|Bosnia y Herzegovina||BIH12|Ivan Basic|Bosnia y Herzegovina||BIH13|Team Photo|Bosnia y Herzegovina||BIH14|Dzenis Burnic|Bosnia y Herzegovina||BIH15|Esmir Bajraktarevic|Bosnia y Herzegovina||BIH16|Amar Memic|Bosnia y Herzegovina||BIH17|Ermedin Demirovic|Bosnia y Herzegovina||BIH18|Edin Dzeko|Bosnia y Herzegovina||BIH19|Samed Bazdar|Bosnia y Herzegovina||BIH20|Haris Tabakovic|Bosnia y Herzegovina||QAT1|Team Logo|Qatar|f|QAT2|Meshaal Barsham|Qatar||QAT3|Sultan Albrake|Qatar||QAT4|Lucas Mendes|Qatar||QAT5|Homam Ahmed|Qatar||QAT6|Boualem Khoukhi|Qatar||QAT7|Pedro Miguel|Qatar||QAT8|Tarek Salman|Qatar||QAT9|Mohamed Al-Mannai|Qatar||QAT10|Karim Boudiaf|Qatar||QAT11|Assim Madibo|Qatar||QAT12|Ahmed Fatehi|Qatar||QAT13|Team Photo|Qatar||QAT14|Mohammed Waad|Qatar||QAT15|Abdulaziz Hatem|Qatar||QAT16|Hassan Al-Haydos|Qatar||QAT17|Edmilson Junior|Qatar||QAT18|Akram Hassan Afif|Qatar||QAT19|Ahmed Al Ganehi|Qatar||QAT20|Almoez Ali|Qatar||SUI1|Team Logo|Switzerland|f|SUI2|Gregor Kobel|Switzerland||SUI3|Yvon Mvogo|Switzerland||SUI4|Manuel Akanji|Switzerland||SUI5|Ricardo Rodriguez|Switzerland||SUI6|Nico Elvedi|Switzerland||SUI7|Aurèle Amenda|Switzerland||SUI8|Silvan Widmer|Switzerland||SUI9|Granit Xhaka|Switzerland||SUI10|Denis Zakaria|Switzerland||SUI11|Remo Freuler|Switzerland||SUI12|Fabian Rieder|Switzerland||SUI13|Team Photo|Switzerland||SUI14|Ardon Jashari|Switzerland||SUI15|Johan Manzambi|Switzerland||SUI16|Michel Aebischer|Switzerland||SUI17|Breel Embolo|Switzerland||SUI18|Ruben Vargas|Switzerland||SUI19|Dan Ndoye|Switzerland||SUI20|Zeki Amdouni|Switzerland||BRA1|Team Logo|Brazil|f|BRA2|Alisson|Brazil||BRA3|Bento|Brazil||BRA4|Marquinhos|Brazil||BRA5|Éder Militão|Brazil||BRA6|Gabriel Magalhães|Brazil||BRA7|Danilo|Brazil||BRA8|Wesley|Brazil||BRA9|Lucas Paquetá|Brazil||BRA10|Casemiro|Brazil||BRA11|Bruno Guimarães|Brazil||BRA12|Luiz Henrique|Brazil||BRA13|Team Photo|Brazil||BRA14|Vinicius Júnior|Brazil||BRA15|Rodrygo|Brazil||BRA16|João Pedro|Brazil||BRA17|Matheus Cunha|Brazil||BRA18|Gabriel Martinelli|Brazil||BRA19|Raphinha|Brazil||BRA20|Estévão|Brazil||MAR1|Team Logo|Morocco|f|MAR2|Yassine Bounou|Morocco||MAR3|Munir El Kajoui|Morocco||MAR4|Achraf Hakimi|Morocco||MAR5|Noussair Mazraoui|Morocco||MAR6|Nayef Aguerd|Morocco||MAR7|Roman Saiss|Morocco||MAR8|Jawad El Yamio|Morocco||MAR9|Adam Masina|Morocco||MAR10|Sofyan Amrabat|Morocco||MAR11|Azzedine Ounahi|Morocco||MAR12|Eliesse Ben Seghir|Morocco||MAR13|Team Photo|Morocco||MAR14|Bilal El Khannouss|Morocco||MAR15|Ismael Saibari|Morocco||MAR16|Youssef En-Nesyri|Morocco||MAR17|Abde Ezzalzouli|Morocco||MAR18|Soufiane Rahimi|Morocco||MAR19|Brahim Diaz|Morocco||MAR20|Ayoub El Kaabi|Morocco||HAI1|Team Logo|Haiti|f|HAI2|Johny Placide|Haiti||HAI3|Carlens Arcus|Haiti||HAI4|Martin Expérience|Haiti||HAI5|Jean-Kevin Duverne|Haiti||HAI6|Ricardo Adé|Haiti||HAI7|Duke Lacroix|Haiti||HAI8|Garven Metusala|Haiti||HAI9|Hannes Delcroix|Haiti||HAI10|Leverton Pierre|Haiti||HAI11|Danley Jean Jacques|Haiti||HAI12|Jean-Ricner Bellegarde|Haiti||HAI13|Team Photo|Haiti||HAI14|Christopher Attys|Haiti||HAI15|Derrick Etienne Jr|Haiti||HAI16|Josue Casimir|Haiti||HAI17|Ruben Providence|Haiti||HAI18|Duckens Nazon|Haiti||HAI19|Louicius Deedson|Haiti||HAI20|Frantzdy Pierrot|Haiti||SCO1|Team Logo|Scotland|f|SCO2|Angus Gunn|Scotland||SCO3|Jack Hendry|Scotland||SCO4|Kieran Tierney|Scotland||SCO5|Aaron Hickey|Scotland||SCO6|Andrew Robertson|Scotland||SCO7|Scott McKenna|Scotland||SCO8|John Souttar|Scotland||SCO9|Anthony Ralston|Scotland||SCO10|Grant Hanley|Scotland||SCO11|Scott McTominay|Scotland||SCO12|Billy Gilmour|Scotland||SCO13|Team Photo|Scotland||SCO14|Lewis Ferguson|Scotland||SCO15|Ryan Christie|Scotland||SCO16|Kenny McLean|Scotland||SCO17|John McGinn|Scotland||SCO18|Lyndon Dykes|Scotland||SCO19|Che Adams|Scotland||SCO20|Ben Gannon-Doak|Scotland||USA1|Team Logo|USA|f|USA2|Matt Freese|USA||USA3|Chris Richards|USA||USA4|Tim Ream|USA||USA5|Mark McKenzie|USA||USA6|Alex Freeman|USA||USA7|Antonee Robinson|USA||USA8|Tyler Adams|USA||USA9|Tanner Tessmann|USA||USA10|Weston McKennie|USA||USA11|Christian Roldan|USA||USA12|Timothy Weah|USA||USA13|Team Photo|USA||USA14|Diego Luna|USA||USA15|Malik Tillman|USA||USA16|Christian Pulisic|USA||USA17|Brenden Aaronson|USA||USA18|Ricardo Pepi|USA||USA19|Haji Wright|USA||USA20|Folarin Balogun|USA||PAR1|Team Logo|Paraguay|f|PAR2|Roberto Fernandez|Paraguay||PAR3|Orlando Gill|Paraguay||PAR4|Gustavo Gomez|Paraguay||PAR5|Fabián Balbuena|Paraguay||PAR6|Juan José Cáceres|Paraguay||PAR7|Omar Alderete|Paraguay||PAR8|Junior Alonso|Paraguay||PAR9|Mathías Villasanti|Paraguay||PAR10|Diego Gomez|Paraguay||PAR11|Damián Bobadilla|Paraguay||PAR12|Andres Cubas|Paraguay||PAR13|Team Photo|Paraguay||PAR14|Matias Galarza Fonda|Paraguay||PAR15|Julio Enciso|Paraguay||PAR16|Alejandro Romero Gamarra|Paraguay||PAR17|Miguel Almirón|Paraguay||PAR18|Ramon Sosa|Paraguay||PAR19|Angel Romero|Paraguay||PAR20|Antonio Sanabria|Paraguay||AUS1|Team Logo|Australia|f|AUS2|Mathew Ryan|Australia||AUS3|Joe Gauci|Australia||AUS4|Harry Souttar|Australia||AUS5|Alessandro Circati|Australia||AUS6|Jordan Bos|Australia||AUS7|Aziz Behich|Australia||AUS8|Cameron Burgess|Australia||AUS9|Lewis Miller|Australia||AUS10|Milos Degenek|Australia||AUS11|Jackson Irvine|Australia||AUS12|Riley McGree|Australia||AUS13|Team Photo|Australia||AUS14|Aiden O'Neill|Australia||AUS15|Connor Metcalfe|Australia||AUS16|Patrick Yazbek|Australia||AUS17|Craig Goodwin|Australia||AUS18|Kusini Vengi|Australia||AUS19|Nestory Irankunda|Australia||AUS20|Mohamed Touré|Australia||TUR1|Team Logo|Türkiye|f|TUR2|Ugurcan Cakir|Türkiye||TUR3|Mert Muldur|Türkiye||TUR4|Zeki Celik|Türkiye||TUR5|Abdulkerim Bardakci|Türkiye||TUR6|Caglar Soyuncu|Türkiye||TUR7|Merih Demiral|Türkiye||TUR8|Ferdi Kadioglu|Türkiye||TUR9|Kaan Ayhan|Türkiye||TUR10|Ismail Yuksek|Türkiye||TUR11|Hakan Calhanoglu|Türkiye||TUR12|Orkun Kokcu|Türkiye||TUR13|Team Photo|Türkiye||TUR14|Arda Guler|Türkiye||TUR15|Irfan Can Kahveci|Türkiye||TUR16|Yunus Akgun|Türkiye||TUR17|Can Uzun|Türkiye||TUR18|Baris Alper Yilmaz|Türkiye||TUR19|Kerem Akturkoglu|Türkiye||TUR20|Kenan Yildiz|Türkiye||GER1|Team Logo|Germany|f|GER2|Marc-André ter Stegen|Germany||GER3|Jonathan Tah|Germany||GER4|David Raum|Germany||GER5|Nico Schlotterbeck|Germany||GER6|Antonio Rüdiger|Germany||GER7|Waldemar Anton|Germany||GER8|Ridle Baku|Germany||GER9|Maximilian Mittelstadt|Germany||GER10|Joshua Kimmich|Germany||GER11|Florian Wirtz|Germany||GER12|Felix Nmecha|Germany||GER13|Team Photo|Germany||GER14|Leon Goretzka|Germany||GER15|Jamal Musiala|Germany||GER16|Serge Gnabry|Germany||GER17|Kai Havertz|Germany||GER18|Leroy Sane|Germany||GER19|Karim Adeyemi|Germany||GER20|Nick Woltemade|Germany||CUW1|Team Logo|Curaçao|f|CUW2|Eloy Room|Curaçao||CUW3|Armando Obispo|Curaçao||CUW4|Sherel Floranus|Curaçao||CUW5|Jurien Gaari|Curaçao||CUW6|Joshua Brenet|Curaçao||CUW7|Roshon Van Eijma|Curaçao||CUW8|Shurandy Sambo|Curaçao||CUW9|Livano Comenencia|Curaçao||CUW10|Godfried Roemeratoe|Curaçao||CUW11|Juninho Bacuna|Curaçao||CUW12|Leandro Bacuna|Curaçao||CUW13|Team Photo|Curaçao||CUW14|Tahith Chong|Curaçao||CUW15|Kenji Gorre|Curaçao||CUW16|Jearl Margaritha|Curaçao||CUW17|Jurgen Locadia|Curaçao||CUW18|Jeremy Antonisse|Curaçao||CUW19|Gervane Kastaneer|Curaçao||CUW20|Sontje Hansen|Curaçao||CIV1|Team Logo|Costa de Marfil|f|CIV2|Yahia Fofana|Costa de Marfil||CIV3|Ghislain Konan|Costa de Marfil||CIV4|Wilfried Singo|Costa de Marfil||CIV5|Odilon Kossounou|Costa de Marfil||CIV6|Evan Ndicka|Costa de Marfil||CIV7|Willy Boly|Costa de Marfil||CIV8|Emmanuel Agbadou|Costa de Marfil||CIV9|Ousmane Diomande|Costa de Marfil||CIV10|Franck Kessie|Costa de Marfil||CIV11|Seko Fofana|Costa de Marfil||CIV12|Ibrahim Sangare|Costa de Marfil||CIV13|Team Photo|Costa de Marfil||CIV14|Jean-Philippe Gbamin|Costa de Marfil||CIV15|Amad Diallo|Costa de Marfil||CIV16|Sébastien Haller|Costa de Marfil||CIV17|Simon Adingra|Costa de Marfil||CIV18|Yan Diomande|Costa de Marfil||CIV19|Evann Guessand|Costa de Marfil||CIV20|Oumar Diakite|Costa de Marfil||ECU1|Team Logo|Ecuador|f|ECU2|Hernán Galíndez|Ecuador||ECU3|Gonzalo Valle|Ecuador||ECU4|Piero Hincapié|Ecuador||ECU5|Pervis Estupiñán|Ecuador||ECU6|Willian Pacho|Ecuador||ECU7|Ángelo Preciado|Ecuador||ECU8|Joel Ordóñez|Ecuador||ECU9|Moises Caicedo|Ecuador||ECU10|Alan Franco|Ecuador||ECU11|Kendry Paez|Ecuador||ECU12|Pedro Vite|Ecuador||ECU13|Team Photo|Ecuador||ECU14|John Veboah|Ecuador||ECU15|Leonardo Campana|Ecuador||ECU16|Gonzalo Plata|Ecuador||ECU17|Nilson Angulo|Ecuador||ECU18|Alan Minda|Ecuador||ECU19|Kevin Rodriguez|Ecuador||ECU20|Enner Valencia|Ecuador||NED1|Team Logo|Netherlands|f|NED2|Bart Verbruggen|Netherlands||NED3|Virgil van Dijk|Netherlands||NED4|Micky van de Ven|Netherlands||NED5|Jurrien Timber|Netherlands||NED6|Denzel Dumfries|Netherlands||NED7|Nathan Aké|Netherlands||NED8|Jeremie Frimpong|Netherlands||NED9|Jan Paul van Hecke|Netherlands||NED10|Tijjani Reijnders|Netherlands||NED11|Ryan Gravenberch|Netherlands||NED12|Teun Koopmeiners|Netherlands||NED13|Team Photo|Netherlands||NED14|Frenkie de Jong|Netherlands||NED15|Xavi Simons|Netherlands||NED16|Justin Kluivert|Netherlands||NED17|Memphis Depay|Netherlands||NED18|Donyell Malen|Netherlands||NED19|Wout Weghorst|Netherlands||NED20|Cody Gakpo|Netherlands||JPN1|Team Logo|Japan|f|JPN2|Zion Suzuki|Japan||JPN3|Henry Heroki Mochizuki|Japan||JPN4|Ayumu Seko|Japan||JPN5|Junnosuke Suzuki|Japan||JPN6|Shogo Taniguchi|Japan||JPN7|Tsuyoshi Watanabe|Japan||JPN8|Kaishu Sano|Japan||JPN9|Yuki Soma|Japan||JPN10|Ao Tanaka|Japan||JPN11|Daichi Kamada|Japan||JPN12|Takefusa Kubo|Japan||JPN13|Team Photo|Japan||JPN14|Ritsu Doan|Japan||JPN15|Keito Nakamura|Japan||JPN16|Takumi Minamino|Japan||JPN17|Shuto Machino|Japan||JPN18|Junya Ito|Japan||JPN19|Koki Ogawa|Japan||JPN20|Ayase Ueda|Japan||SWE1|Team Logo|Sweden|f|SWE2|Victor Johansson|Sweden||SWE3|Isak Hien|Sweden||SWE4|Gabriel Gudmundsson|Sweden||SWE5|Emil Holm|Sweden||SWE6|Victor Nilsson Lindelöf|Sweden||SWE7|Gustaf Lagerbielke|Sweden||SWE8|Lucas Bergvall|Sweden||SWE9|Hugo Larsson|Sweden||SWE10|Jesper Karlström|Sweden||SWE11|Yasin Ayari|Sweden||SWE12|Mattias Svanberg|Sweden||SWE13|Team Photo|Sweden||SWE14|Daniel Svensson|Sweden||SWE15|Ken Sema|Sweden||SWE16|Roony Bardghji|Sweden||SWE17|Dejan Kulusevski|Sweden||SWE18|Anthony Elanga|Sweden||SWE19|Alexander Isak|Sweden||SWE20|Viktor Gyökeres|Sweden||TUN1|Team Logo|Tunisia|f|TUN2|Bechir Ben Said|Tunisia||TUN3|Aymen Dahmen|Tunisia||TUN4|Yan Valery|Tunisia||TUN5|Montassar Talbi|Tunisia||TUN6|Yassine Meriah|Tunisia||TUN7|Ali Abdi|Tunisia||TUN8|Dylan Bronn|Tunisia||TUN9|Ellyes Skhiri|Tunisia||TUN10|Aissa Laidouni|Tunisia||TUN11|Ferjani Sassi|Tunisia||TUN12|Mohamed Ali Ben Romdhane|Tunisia||TUN13|Team Photo|Tunisia||TUN14|Hannibal Mejbri|Tunisia||TUN15|Elias Achouri|Tunisia||TUN16|Elias Saad|Tunisia||TUN17|Hazem Mastouri|Tunisia||TUN18|Ismael Gharbi|Tunisia||TUN19|Sayfallah Ltaief|Tunisia||TUN20|Naim Sliti|Tunisia||BEL1|Team Logo|Belgium|f|BEL2|Thibaut Courtois|Belgium||BEL3|Arthur Theate|Belgium||BEL4|Timothy Castagne|Belgium||BEL5|Zeno Debast|Belgium||BEL6|Brandon Mechele|Belgium||BEL7|Maxim De Cuyper|Belgium||BEL8|Thomas Meunier|Belgium||BEL9|Youri Tielemans|Belgium||BEL10|Amadou Onana|Belgium||BEL11|Nicolas Raskin|Belgium||BEL12|Alexis Saelemaekers|Belgium||BEL13|Team Photo|Belgium||BEL14|Hans Vanaken|Belgium||BEL15|Kevin De Bruyne|Belgium||BEL16|Jérémy Doku|Belgium||BEL17|Charles De Ketelaere|Belgium||BEL18|Leandro Trossard|Belgium||BEL19|Loïs Openda|Belgium||BEL20|Romelu Lukaku|Belgium||EGY1|Team Logo|Egypt|f|EGY2|Mohamed El Shenawy|Egypt||EGY3|Mohamed Hany|Egypt||EGY4|Mohamed Hamdy|Egypt||EGY5|Yasser Ibrahim|Egypt||EGY6|Khaled Sobhi|Egypt||EGY7|Ramy Rabia|Egypt||EGY8|Hossam Abdelmaguid|Egypt||EGY9|Ahmed Fatouh|Egypt||EGY10|Marwan Attia|Egypt||EGY11|Zizo|Egypt||EGY12|Hamdy Fathy|Egypt||EGY13|Team Photo|Egypt||EGY14|Mohamed Lasheen|Egypt||EGY15|Emam Ashour|Egypt||EGY16|Osama Faisal|Egypt||EGY17|Mohamed Salah|Egypt||EGY18|Mostafa Mohamed|Egypt||EGY19|Trezeguet|Egypt||EGY20|Omar Marmoush|Egypt||NZL1|Team Logo|New Zealand|f|NZL2|Max Crocombe|New Zealand||NZL3|Alex Paulsen|New Zealand||NZL4|Michael Boxall|New Zealand||NZL5|Liberato Cacace|New Zealand||NZL6|Tim Payne|New Zealand||NZL7|Tyler Bindon|New Zealand||NZL8|Francis de Vries|New Zealand||NZL9|Finn Surman|New Zealand||NZL10|Joe Bell|New Zealand||NZL11|Sarpreet Singh|New Zealand||NZL12|Ryan Thomas|New Zealand||NZL13|Team Photo|New Zealand||NZL14|Matthew Garbett|New Zealand||NZL15|Marko Stamenić|New Zealand||NZL16|Ben Old|New Zealand||NZL17|Chris Wood|New Zealand||NZL18|Elijah Just|New Zealand||NZL19|Callum McCowatt|New Zealand||NZL20|Kosta Barbarouses|New Zealand||IRN1|Team Logo|Iran|f|IRN2|Alireza Beiranvand|Iran||IRN3|Morteza Pouraliganji|Iran||IRN4|Ehsan Hajsafi|Iran||IRN5|Milad Mohammadi|Iran||IRN6|Shojae Khalilzadeh|Iran||IRN7|Ramin Rezaeian|Iran||IRN8|Hossein Kanaani|Iran||IRN9|Sadegh Moharrami|Iran||IRN10|Saleh Hardani|Iran||IRN11|Saeed Ezatolahi|Iran||IRN12|Saman Ghoddos|Iran||IRN13|Team Photo|Iran||IRN14|Omid Noorafkan|Iran||IRN15|Roozbeh Cheshmi|Iran||IRN16|Mohammad Mohebi|Iran||IRN17|Sardar Azmoun|Iran||IRN18|Mehdi Taremi|Iran||IRN19|Alireza Jahanbakhsh|Iran||IRN20|Ali Gholizadeh|Iran||ESP1|Team Logo|Spain|f|ESP2|Unai Simon|Spain||ESP3|Robin Le Normand|Spain||ESP4|Aymeric Laporte|Spain||ESP5|Dean Huijsen|Spain||ESP6|Pedro Porro|Spain||ESP7|Dani Carvajal|Spain||ESP8|Marc Cucurella|Spain||ESP9|Martín Zubimendi|Spain||ESP10|Rodri|Spain||ESP11|Pedri|Spain||ESP12|Fabian Ruiz|Spain||ESP13|Team Photo|Spain||ESP14|Mikel Merino|Spain||ESP15|Lamine Yamal|Spain||ESP16|Dani Olmo|Spain||ESP17|Nico Williams|Spain||ESP18|Ferran Torres|Spain||ESP19|Álvaro Morata|Spain||ESP20|Mikel Oyarzabal|Spain||URU1|Team Logo|Uruguay|f|URU2|Sergio Rochet|Uruguay||URU3|José María Giménez|Uruguay||URU4|Ronald Araújo|Uruguay||URU5|Mathías Olivera|Uruguay||URU6|Sebastián Cáceres|Uruguay||URU7|Lucas Torreira|Uruguay||URU8|Rodrigo Bentancur|Uruguay||URU9|Manuel Ugarte|Uruguay||URU10|Federico Valverde|Uruguay||URU11|Giorgian de Arrascaeta|Uruguay||URU12|Maxi Gómez|Uruguay||URU13|Team Photo|Uruguay||URU14|Agustín Canobbio|Uruguay||URU15|Nicolás de la Cruz|Uruguay||URU16|Facundo Torres|Uruguay||URU17|Maximiliano Araújo|Uruguay||URU18|Edinson Cavani|Uruguay||URU19|Facundo Pellistri|Uruguay||URU20|Darwin Núñez|Uruguay||KSA1|Team Logo|Arabia Saudita|f|KSA2|Nawaf Al-Aqidi|Arabia Saudita||KSA3|Yasser Al-Shahrani|Arabia Saudita||KSA4|Hassan Al-Tambakti|Arabia Saudita||KSA5|Abdulelah Al-Amri|Arabia Saudita||KSA6|Jihad Al-Thikri|Arabia Saudita||KSA7|Nasser Al-Dawsari|Arabia Saudita||KSA8|Riyadh Sharahili|Arabia Saudita||KSA9|Mohammed Al-Faraj|Arabia Saudita||KSA10|Ziad Al-Johani|Arabia Saudita||KSA11|Abdullah Al-Khaibari|Arabia Saudita||KSA12|Nasser Al-Dawsari B|Arabia Saudita||KSA13|Team Photo|Arabia Saudita||KSA14|Saleh Abu Alshamat|Arabia Saudita||KSA15|Marwan Al-Sahafi|Arabia Saudita||KSA16|Salem Al-Dawsari|Arabia Saudita||KSA17|Firas Al-Buraikan|Arabia Saudita||KSA18|Abdullah Al-Hamddan|Arabia Saudita||KSA19|Saleh Al-Shehri|Arabia Saudita||KSA20|Mohammed Al-Buraik|Arabia Saudita||CPV1|Team Logo|Cabo Verde|f|CPV2|Vozinha|Cabo Verde||CPV3|Logan Costa|Cabo Verde||CPV4|Pico|Cabo Verde||CPV5|Diney|Cabo Verde||CPV6|Steven Moreira|Cabo Verde||CPV7|Wagner Pina|Cabo Verde||CPV8|Joao Paulo|Cabo Verde||CPV9|Yannick Semedo|Cabo Verde||CPV10|Kevin Pina|Cabo Verde||CPV11|Patrick Andrade|Cabo Verde||CPV12|Jamiro Monteiro|Cabo Verde||CPV13|Team Photo|Cabo Verde||CPV14|Pedro Monteiro|Cabo Verde||CPV15|Ryan Mendes|Cabo Verde||CPV16|Garry Rodrigues|Cabo Verde||CPV17|Willy Semedo|Cabo Verde||CPV18|Djaniny|Cabo Verde||CPV19|Patrick Andrade B|Cabo Verde||CPV20|Garry Rodrigues B|Cabo Verde||FRA1|Team Logo|France|f|FRA2|Mike Maignan|France||FRA3|William Saliba|France||FRA4|Dayot Upamecano|France||FRA5|Ibrahima Konaté|France||FRA6|Jules Koundé|France||FRA7|Theo Hernández|France||FRA8|N'Golo Kanté|France||FRA9|Aurélien Tchouaméni|France||FRA10|Eduardo Camavinga|France||FRA11|Warren Zaïre-Emery|France||FRA12|Adrien Rabiot|France||FRA13|Team Photo|France||FRA14|Ousmane Dembélé|France||FRA15|Kingsley Coman|France||FRA16|Bradley Barcola|France||FRA17|Marcus Thuram|France||FRA18|Randal Kolo Muani|France||FRA19|Antoine Griezmann|France||FRA20|Kylian Mbappé|France||SEN1|Team Logo|Senegal|f|SEN2|Edouard Mendy|Senegal||SEN3|Pape Gueye|Senegal||SEN4|Abdou Diallo|Senegal||SEN5|Kalidou Koulibaly|Senegal||SEN6|Ismail Jakobs|Senegal||SEN7|Habib Diarra|Senegal||SEN8|Lamine Camara|Senegal||SEN9|Nampalys Mendy|Senegal||SEN10|Pape Matar Sarr|Senegal||SEN11|Boulaye Dia|Senegal||SEN12|Nicolas Jhon Diouf|Senegal||SEN13|Team Photo|Senegal||SEN14|El Hadj Malick Diouf|Senegal||SEN15|Sadio Mane|Senegal||SEN16|Ismaila Sarr|Senegal||SEN17|Iliman Ndiaye|Senegal||SEN18|Krepin Diatta|Senegal||SEN19|Habib Diallo|Senegal||SEN20|Cherif Ndiaye|Senegal||NOR1|Team Logo|Norway|f|NOR2|Orjan Nyland|Norway||NOR3|Julian Ryerson|Norway||NOR4|Leo Østigård|Norway||NOR5|Kristoffer Vassbakk Ajer|Norway||NOR6|Marcus Holmgren Pedersen|Norway||NOR7|David Møller Wolfe|Norway||NOR8|Torbjørn Heggem|Norway||NOR9|Morten Thorsby|Norway||NOR10|Sander Berge|Norway||NOR11|Elias Hagen|Norway||NOR12|Andreas Schjelderup|Norway||NOR13|Team Photo|Norway||NOR14|Patrick Berg|Norway||NOR15|Erling Haaland|Norway||NOR16|Alexander Sørloth|Norway||NOR17|Aron Dønnum|Norway||NOR18|Jørgen Strand Larsen|Norway||NOR19|Antonio Nusa|Norway||NOR20|Ola Solbakken|Norway||IRQ1|Team Logo|Iraq|f|IRQ2|Jalal Hassan|Iraq||IRQ3|Ali Al-Hamami|Iraq||IRQ4|Rebin Sulaka|Iraq||IRQ5|Amam Hashem|Iraq||IRQ6|Mercidas Doski|Iraq||IRQ7|Salom Obaid|Iraq||IRQ8|Ali Jasim|Iraq||IRQ9|Zaid Tahseen|Iraq||IRQ10|Osama Rashid|Iraq||IRQ11|Ali Al-Hamami B|Iraq||IRQ12|Moahnad Hussain|Iraq||IRQ13|Team Photo|Iraq||IRQ14|Youssef Amyn|Iraq||IRQ15|Aimar Sner|Iraq||IRQ16|Omar Rashid|Iraq||IRQ17|Moahnad Ali|Iraq||IRQ18|Aymen Husein|Iraq||IRQ19|Mahmoud Ali|Iraq||IRQ20|Mohammed Ali|Iraq||ARG1|Team Logo|Argentina|f|ARG2|Emiliano Martínez|Argentina||ARG3|Nahuel Molina|Argentina||ARG4|Cristian Romero|Argentina||ARG5|Lisandro Martínez|Argentina||ARG6|Nicolás Otamendi|Argentina||ARG7|Marcos Acuña|Argentina||ARG8|Rodrigo De Paul|Argentina||ARG9|Enzo Fernández|Argentina||ARG10|Leandro Paredes|Argentina||ARG11|Alexis Mac Allister|Argentina||ARG12|Giovani Lo Celso|Argentina||ARG13|Team Photo|Argentina||ARG14|Nicolás González|Argentina||ARG15|Julián Álvarez|Argentina||ARG16|Ángel Di María|Argentina||ARG17|Nicolás Paz|Argentina||ARG18|Lautaro Martínez|Argentina||ARG19|Paulo Dybala|Argentina||ARG20|Lionel Messi|Argentina||ALG1|Team Logo|Algeria|f|ALG2|Alexis Guendouz|Algeria||ALG3|Ramy Bensebaini|Algeria||ALG4|Youcef Atal|Algeria||ALG5|Rayan Aït-Nouri|Algeria||ALG6|Mohamed Amine Tougai|Algeria||ALG7|Aïssa Mandi|Algeria||ALG8|Ismaël Bennacer|Algeria||ALG9|Mehdi Benali|Algeria||ALG10|Hicham Boudaoui|Algeria||ALG11|Samir Benrahma|Algeria||ALG12|Naïl Bentaleb|Algeria||ALG13|Team Photo|Algeria||ALG14|Farès Chaïbi|Algeria||ALG15|Riyad Mahrez|Algeria||ALG16|Amine Gouiri|Algeria||ALG17|Anis Hadj Moussa|Algeria||ALG18|Baghdad Bounedjah|Algeria||ALG19|Mohammed Amoura|Algeria||ALG20|Andy Delort|Algeria||AUT1|Team Logo|Austria|f|AUT2|Alexander Schlager|Austria||AUT3|Philipp Lienhart|Austria||AUT4|Xaver Schlager|Austria||AUT5|Femi Danso|Austria||AUT6|Alexander Prass|Austria||AUT7|Niklas Hedl|Austria||AUT8|Phillipp Mwene|Austria||AUT9|Maximilian Wöber|Austria||AUT10|Marko Arnautovic|Austria||AUT11|Miro Knasmüllner|Austria||AUT12|Michael Gregoritsch|Austria||AUT13|Team Photo|Austria||AUT14|Marcel Sabitzer|Austria||AUT15|Konrad Laimer|Austria||AUT16|Nicolás Seiwald|Austria||AUT17|Christoph Baumgartner|Austria||AUT18|David Alaba|Austria||AUT19|Patrick Wimmer|Austria||AUT20|Romano Schmid|Austria||JOR1|Team Logo|Jordan|f|JOR2|Yazeed Abulaila|Jordan||JOR3|Sanad Natiq|Jordan||JOR4|Mohammad Abu Hashish|Jordan||JOR5|Yazan Al-Arab|Jordan||JOR6|Abdoallah Nasib|Jordan||JOR7|Saleem Obaid|Jordan||JOR8|Nour Al-Rawabdeh|Jordan||JOR9|Ahmad Al-Rousan|Jordan||JOR10|Ali Olwan|Jordan||JOR11|Mousa Al-Taamari|Jordan||JOR12|Mohamad Abu Taha|Jordan||JOR13|Team Photo|Jordan||JOR14|Amer Jamdous|Jordan||JOR15|Moussa Al-Taamari|Jordan||JOR16|Yazan Al-Naimat|Jordan||JOR17|Hesham Al-Raoushi|Jordan||JOR18|Mohammad Rasheed|Jordan||JOR19|Mohammad Hamdao|Jordan||JOR20|Ali Al-Olwan|Jordan||POR1|Team Logo|Portugal|f|POR2|Diogo Costa|Portugal||POR3|Rúben Dias|Portugal||POR4|Pepe|Portugal||POR5|João Cancelo|Portugal||POR6|Diogo Dalot|Portugal||POR7|Nuno Mendes|Portugal||POR8|João Palhinha|Portugal||POR9|Vitinha|Portugal||POR10|Bruno Fernandes|Portugal||POR11|Bernardo Silva|Portugal||POR12|Pedro Neto|Portugal||POR13|Team Photo|Portugal||POR14|Rúben Neves|Portugal||POR15|Cristiano Ronaldo|Portugal||POR16|Francisco Trincão|Portugal||POR17|Gonçalo Inácio|Portugal||POR18|Rafael Leão|Portugal||POR19|João Félix|Portugal||POR20|Gonçalo Ramos|Portugal||COL1|Team Logo|Colombia|f|COL2|David Ospina|Colombia||COL3|Santiago Arias|Colombia||COL4|Dávinson Sánchez|Colombia||COL5|Yerry Mina|Colombia||COL6|Johan Mojica|Colombia||COL7|Daniel Muñoz|Colombia||COL8|Jefferson Lerma|Colombia||COL9|Juan Castaño|Colombia||COL10|Juan Cuadrado|Colombia||COL11|Kevin Castaño|Colombia||COL12|Richard Ríos|Colombia||COL13|Team Photo|Colombia||COL14|James Rodríguez|Colombia||COL15|Jhon Arias|Colombia||COL16|Jorge Carrascal|Colombia||COL17|Jhon Córdoba|Colombia||COL18|Rafael Santos Borré|Colombia||COL19|Radamel Falcao|Colombia||COL20|Luis Díaz|Colombia||COD1|Team Logo|Congo DR|f|COD2|Lionel Mpasi|Congo DR||COD3|Theo Bongonda|Congo DR||COD4|Issam Essama|Congo DR||COD5|Arthur Masuaku|Congo DR||COD6|Axel Tuanzebe|Congo DR||COD7|Jean Onana|Congo DR||COD8|Charles Pickel|Congo DR||COD9|Ngaliviel Murau|Congo DR||COD10|Yohan Wissa|Congo DR||COD11|Meschak Elia|Congo DR||COD12|Cédric Bakambu|Congo DR||COD13|Team Photo|Congo DR||COD14|Joris Kayembe|Congo DR||COD15|Eza Avembe|Congo DR||COD16|Florent Ibenge|Congo DR||COD17|Nanis Mwanza-Bika|Congo DR||COD18|Issam Essama B|Congo DR||COD19|Theo Bongonda B|Congo DR||COD20|Yohan Wissa B|Congo DR||UZB1|Team Logo|Uzbekistan|f|UZB2|Utkin Yusupov|Uzbekistan||UZB3|Dostonbek Khamdamov|Uzbekistan||UZB4|Khojimat Erkinov|Uzbekistan||UZB5|Jamshid Iskanderov|Uzbekistan||UZB6|Husniddin Alidulov|Uzbekistan||UZB7|Rustam Ashurmatov|Uzbekistan||UZB8|Abbosbek Fayzullaev|Uzbekistan||UZB9|Eldor Shomurodov|Uzbekistan||UZB10|Otabek Shukurov|Uzbekistan||UZB11|Eldor Shomurodov B|Uzbekistan||UZB12|Igor Sergeev|Uzbekistan||UZB13|Team Photo|Uzbekistan||UZB14|Azizbekov Turgunboev|Uzbekistan||UZB15|Khojimat Erkinov B|Uzbekistan||UZB16|Eldor Shomurodov C|Uzbekistan||UZB17|Otton Urunov|Uzbekistan||UZB18|Sherzod Nasrullayev|Uzbekistan||UZB19|Abbosbek Fayzullaev B|Uzbekistan||UZB20|Abdulaziz Pardaev|Uzbekistan||ENG1|Team Logo|England|f|ENG2|Jordan Pickford|England||ENG3|John Stones|England||ENG4|Kyle Walker|England||ENG5|Ezri Konsa|England||ENG6|Trent Alexander-Arnold|England||ENG7|Marc Guehi|England||ENG8|Declan Rice|England||ENG9|Jude Bellingham|England||ENG10|Kobbie Mainoo|England||ENG11|Phil Foden|England||ENG12|Cole Palmer|England||ENG13|Team Photo|England||ENG14|Anthony Gordon|England||ENG15|Bukayo Saka|England||ENG16|Marcus Rashford|England||ENG17|Ollie Watkins|England||ENG18|Harry Kane|England||ENG19|Ivan Toney|England||ENG20|Eberechi Eze|England||CRO1|Team Logo|Croatia|f|CRO2|Dominik Livaković|Croatia||CRO3|Duje Ćaleta-Car|Croatia||CRO4|Joško Gvardiol|Croatia||CRO5|Martin Erlić|Croatia||CRO6|Luka Vušković|Croatia||CRO7|Josip Šutalo|Croatia||CRO8|Kristijan Jakić|Croatia||CRO9|Marcelo Brozović|Croatia||CRO10|Mateo Kovačić|Croatia||CRO11|Martin Baturina|Croatia||CRO12|Lovro Majer|Croatia||CRO13|Team Photo|Croatia||CRO14|Luka Modric|Croatia||CRO15|Petar Sučić|Croatia||CRO16|Ivan Perišić|Croatia||CRO17|Ante Budimir|Croatia||CRO18|Andrej Kramarić|Croatia||CRO19|Franjo Ivanović|Croatia||CRO20|Bruno Petković|Croatia||GHA1|Team Logo|Ghana|f|GHA2|Lawrence Ati-Zigi|Ghana||GHA3|Tariq Lamptey|Ghana||GHA4|Alexander Djiku|Ghana||GHA5|Daniel Amartey|Ghana||GHA6|Gideon Mensah|Ghana||GHA7|Thomas Partey|Ghana||GHA8|Salis Abdul Samed|Ghana||GHA9|Baba Iddrisu|Ghana||GHA10|Mohammed Kudus|Ghana||GHA11|Abdul Fatawu Issahaku|Ghana||GHA12|Nana Ampomah|Ghana||GHA13|Team Photo|Ghana||GHA14|Osman Bukari|Ghana||GHA15|Antoine Semenyo|Ghana||GHA16|Jordan Ayew|Ghana||GHA17|Ernest Nuamah|Ghana||GHA18|Inaki Williams|Ghana||GHA19|Kamaldeen Sulemana|Ghana||GHA20|Antoine Semenvo|Ghana||PAN1|Team Logo|Panama|f|PAN2|Orlando Mosquera|Panama||PAN3|Luis Mejía|Panama||PAN4|Sidy Mejía|Panama||PAN5|Andrés Andrade|Panama||PAN6|Michael Amir Murillo|Panama||PAN7|Édgar Bárcenas|Panama||PAN8|Néstor Córdoba|Panama||PAN9|Anibal Godoy|Panama||PAN10|Cristian Martínez|Panama||PAN11|Cédric Blackman|Panama||PAN12|César Blackman|Panama||PAN13|Team Photo|Panama||PAN14|Jose Fajardo|Panama||PAN15|Carlos Harvey|Panama||PAN16|Alberto Dimitri|Panama||PAN17|Ismael Díaz|Panama||PAN18|José Luis Rodríguez|Panama||PAN19|Rolando Blackburn|Panama||PAN20|Cecilio Waterman|Panama|";
 
-<!-- Firebase SDK -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-
-// ── TRANSLATIONS ───────────────────────────────────────────────────────────
-const TRANSLATIONS = {
-  es: {
-    headerTitle: 'FIFA World Cup 2026',
-    headerSub: 'Panini Sticker Tracker',
-    syncConnecting: '⏳ Conectando...',
-    syncOk: '✅ Sincronizado',
-    syncError: '❌ Sin conexión',
-    loadingLabel: 'Cargando...',
-    figuritasLabel: 'figuritas',
-    statOwned: 'tengo',
-    statMiss: 'faltan',
-    statDup: 'repetidas',
-    tabAlbum: '📋 Álbum',
-    tabTeams: '📊 Equipos',
-    tabDups: '♻️ Repetidas',
-    searchPlaceholder: '🔍 Buscar código o jugador...',
-    teamSelectLabel: '🌐 Todos los equipos',
-    filterAll: 'Todas',
-    filterMissing: 'Faltan',
-    filterOwned: 'Tengo',
-    filterDup: 'Repetidas',
-    showingLabel: 'Mostrando',
-    dups: 'figuritas repetidas para intercambiar',
-    noDups: '¡No tenés repetidas aún! 🎉',
-    setupTitle: 'Configurar Firebase',
-    setupDesc: 'Para sincronizar tu álbum entre dispositivos, pegá los datos de tu proyecto Firebase. Solo necesitás hacer esto una vez.',
-    setupStep1: '1. Andá a',
-    setupStep2: '2. Creá un proyecto → Agregá una app Web',
-    setupStep3: '3. Copiá el firebaseConfig y pegá cada valor abajo',
-    setupBtn: 'Guardar y conectar',
-    setupError: 'Por favor completá los tres campos.',
-    configLink: '⚙️ Config',
-    extra: 'extra'
-  },
-  en: {
-    headerTitle: 'FIFA World Cup 2026',
-    headerSub: 'Panini Sticker Tracker',
-    syncConnecting: '⏳ Connecting...',
-    syncOk: '✅ Synced',
-    syncError: '❌ Offline',
-    loadingLabel: 'Loading...',
-    figuritasLabel: 'stickers',
-    statOwned: 'owned',
-    statMiss: 'missing',
-    statDup: 'duplicates',
-    tabAlbum: '📋 Album',
-    tabTeams: '📊 Teams',
-    tabDups: '♻️ Duplicates',
-    searchPlaceholder: '🔍 Search code or player...',
-    teamSelectLabel: '🌐 All teams',
-    filterAll: 'All',
-    filterMissing: 'Missing',
-    filterOwned: 'Owned',
-    filterDup: 'Duplicates',
-    showingLabel: 'Showing',
-    dups: 'stickers to trade',
-    noDups: 'No duplicates yet! 🎉',
-    setupTitle: 'Configure Firebase',
-    setupDesc: 'To sync your album across devices, paste your Firebase project data. You only need to do this once.',
-    setupStep1: '1. Go to',
-    setupStep2: '2. Create a project → Add a Web app',
-    setupStep3: '3. Copy the firebaseConfig and paste each value below',
-    setupBtn: 'Save and connect',
-    setupError: 'Please fill in all three fields.',
-    configLink: '⚙️ Config',
-    extra: 'extra'
-  }
-};
-
-// ── STICKER DATA ─────────────────────────────────────────────────────────
-const RAW=`00|Panini Logo|Opening|f|FWC1|Official Emblem|Opening|f|FWC2|Official Emblem 2|Opening|f|FWC3|Official Mascots|Opening|f|FWC4|Official Slogan|Opening|f|FWC5|Official Ball|Opening|f|FWC6|Can[...]
-
-const STICKERS=[];
-const parts=RAW.split('|');
-for(let i=0;i<parts.length;i+=4){
-  if(parts[i]) STICKERS.push({id:parts[i],name:parts[i+1],team:parts[i+2],foil:parts[i+3]==='f'});
-}
-const TEAMS=[...new Set(STICKERS.map(s=>s.team))];
-
-const INIT={FWC5:1,FWC8:1,FWC9:1,FWC10:1,FWC11:1,FWC12:1,FWC13:1,FWC14:1,FWC15:1,FWC16:1,FWC17:1,FWC18:1,MEX4:1,MEX11:1,MEX12:1,MEX13:1,MEX14:1,MEX17:1,MEX18:1,MEX19:1,RSA2:1,RSA3:1,RSA4:1,RSA5:1[...]
-
-// ── STATE ─────────────────────────────────────────────────────────────
-let col={};
-let db=null;
-let filter='all';
-let debounceTimer=null;
-let lang='es';
-let viewMode='grid';
-
-// ── LANGUAGE ──────────────────────────────────────────────────────────
-function t(key){return TRANSLATIONS[lang][key]||TRANSLATIONS.es[key];}
-
-window.setLang=function(newLang){
-  lang=newLang;
-  localStorage.setItem('panini_lang',lang);
-  document.getElementById('langES').classList.toggle('active',lang==='es');
-  document.getElementById('langEN').classList.toggle('active',lang==='en');
-  updateAllText();
-  renderGrid();
-  renderTeams();
-  renderDups();
-  updateHeader();
-};
-
-function updateAllText(){
-  document.getElementById('headerTitle').textContent=t('headerTitle');
-  document.getElementById('headerSub').textContent=t('headerSub');
-  document.getElementById('statOwned').textContent=t('statOwned');
-  document.getElementById('statMiss').textContent=t('statMiss');
-  document.getElementById('statDup').textContent=t('statDup');
-  document.getElementById('tabAlbum').textContent=t('tabAlbum');
-  document.getElementById('tabTeams').textContent=t('tabTeams');
-  document.getElementById('tabDups').textContent=t('tabDups');
-  document.getElementById('srch').placeholder=t('searchPlaceholder');
-  document.getElementById('teamSel').options[0].textContent=t('teamSelectLabel');
-  document.getElementById('filterAll').textContent=t('filterAll');
-  document.getElementById('filterMissing').textContent=t('filterMissing');
-  document.getElementById('filterOwned').textContent=t('filterOwned');
-  document.getElementById('filterDup').textContent=t('filterDup');
-  document.getElementById('configLink').textContent=t('configLink');
-  document.getElementById('setupTitle').textContent=t('setupTitle');
-  document.getElementById('setupDesc').textContent=t('setupDesc');
-  document.getElementById('setupStep1').textContent=t('setupStep1');
-  document.getElementById('setupStep2').textContent=t('setupStep2');
-  document.getElementById('setupStep3').textContent=t('setupStep3');
-  document.getElementById('setupBtn').textContent=t('setupBtn');
-}
-
-// ── VIEW MODE ─────────────────────────────────────────────────────────
-window.setViewMode=function(mode){
-  viewMode=mode;
-  localStorage.setItem('panini_viewMode',viewMode);
-  document.getElementById('viewGridBtn').classList.toggle('active',viewMode==='grid');
-  document.getElementById('viewListBtn').classList.toggle('active',viewMode==='list');
-  document.getElementById('grid').style.display=viewMode==='grid'?'grid':'none';
-  document.getElementById('listView').style.display=viewMode==='list'?'block':'none';
-  renderGrid();
-};
-
-// ── CONFIG ─────────────────────────────────────────────────────────────
-function getConfig(){try{return JSON.parse(localStorage.getItem('fbcfg')||'null');}catch(e){return null;}}
-function saveConfig(){
-  const cfg={apiKey:document.getElementById('cfg-apiKey').value.trim(),projectId:document.getElementById('cfg-projectId').value.trim(),appId:document.getElementById('cfg-appId').value.trim()};
-  if(!cfg.apiKey||!cfg.projectId||!cfg.appId){alert(t('setupError'));return;}
-  localStorage.setItem('fbcfg',JSON.stringify(cfg));
-  location.reload();
-}
-window.saveConfig=saveConfig;
-function showSetup(){document.getElementById('setupScreen').style.display='block';document.getElementById('mainApp').style.display='none';}
-window.showSetup=showSetup;
-
-// ── INIT ────────────────────────────────────────────────────────────
-const savedLang=localStorage.getItem('panini_lang');
-if(savedLang)lang=savedLang;
-const savedViewMode=localStorage.getItem('panini_viewMode');
-if(savedViewMode)viewMode=savedViewMode;
-
-const cfg=getConfig();
-if(!cfg){
-  document.getElementById('setupScreen').style.display='block';
-  updateAllText();
-} else {
-  document.getElementById('mainApp').style.display='block';
-  updateAllText();
-  document.getElementById('langES').classList.toggle('active',lang==='es');
-  document.getElementById('langEN').classList.toggle('active',lang==='en');
-  document.getElementById('viewGridBtn').classList.toggle('active',viewMode==='grid');
-  document.getElementById('viewListBtn').classList.toggle('active',viewMode==='list');
-  document.getElementById('grid').style.display=viewMode==='grid'?'grid':'none';
-  document.getElementById('listView').style.display=viewMode==='list'?'block':'none';
-  const app=initializeApp({apiKey:cfg.apiKey,projectId:cfg.projectId,appId:cfg.appId,databaseURL:`https://${cfg.projectId}-default-rtdb.firebaseio.com`});
-  db=getDatabase(app);
-  const colRef=ref(db,'album/collection');
-  onValue(colRef,(snap)=>{
-    const data=snap.val();
-    if(data===null){
-      col={...INIT};
-      pushToFirebase();
-    } else {
-      col=data;
+    const STICKERS = [];
+    const parts = RAW.split('|');
+    for (let i = 0; i < parts.length; i += 4) {
+        if (parts[i])
+            STICKERS.push({
+                id: parts[i],
+                name: parts[i + 1],
+                team: parts[i + 2],
+                foil: parts[i + 3] === 'f'
+            });
     }
-    document.getElementById('syncBadge').textContent=t('syncOk');
-    document.getElementById('syncBadge').className='sync-badge sync-ok';
-    renderGrid();
-    renderTeams();
-    renderDups();
-    updateHeader();
-    populateTeamSelect();
-  },(err)=>{
-    document.getElementById('syncBadge').textContent=t('syncError');
-    document.getElementById('syncBadge').className='sync-badge sync-off';
-  });
-}
+    const TEAMS = [...new Set(STICKERS.map(s => s.team))];
 
-function pushToFirebase(){
-  if(!db)return;
-  clearTimeout(debounceTimer);
-  debounceTimer=setTimeout(()=>{update(ref(db,'album'),{collection:col});},600);
-}
+    // ── STATE ─────────────────────────────────────────────────────────────────────
+    let col = {};
+    let db = null;
+    let filter = 'all';
+    let viewMode = localStorage.getItem('viewMode') || 'grid';
+    let lang = localStorage.getItem('lang') || 'es';
+    let debounceTimer = null;
 
-// ── UI ──────────────────────────────────────────────────────────────
-function cnt(id){return col[id]||0;}
-function owned(id){return cnt(id)>=1;}
-function dup(id){return cnt(id)>1;}
+    // ── CONFIG ────────────────────────────────────────────────────────────────────
+    function getConfig() {
+        try {
+            return JSON.parse(localStorage.getItem('fbcfg') || 'null');
+        } catch (e) {
+            return null;
+        }
+    }
+    window.saveConfig = function() {
+        const cfg = {
+            apiKey: document.getElementById('cfg-apiKey').value.trim(),
+            projectId: document.getElementById('cfg-projectId').value.trim(),
+            appId: document.getElementById('cfg-appId').value.trim()
+        };
+        if (!cfg.apiKey || !cfg.projectId || !cfg.appId) {
+            alert(lang === 'es' ? 'Por favor completá los tres campos.' : 'Please fill all three fields.');
+            return;
+        }
+        localStorage.setItem('fbcfg', JSON.stringify(cfg));
+        location.reload();
+    };
+    window.showSetup = function() {
+        document.getElementById('setupScreen').style.display = 'block';
+        document.getElementById('mainApp').style.display = 'none';
+    };
 
-function populateTeamSelect(){
-  const sel=document.getElementById('teamSel');
-  if(sel.options.length>1)return;
-  TEAMS.forEach(t_name=>{
-    const ts=STICKERS.filter(s=>s.team===t_name);
-    const o=ts.filter(s=>owned(s.id)).length;
-    const opt=document.createElement('option');
-    opt.value=t_name;opt.textContent=t_name+' ('+o+'/'+ts.length+')';
-    sel.appendChild(opt);
-  });
-}
+    // ── LANGUAGE ──────────────────────────────────────────────────────────────────
+    window.setLang = function(l, btn) {
+        lang = l;
+        localStorage.setItem('lang', l);
+        document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        applyLang();
+        renderAlbum();
+        renderTeams();
+        renderDups();
+    };
 
-function updateHeader(){
-  const total=STICKERS.length;
-  const o=STICKERS.filter(s=>owned(s.id)).length;
-  const miss=total-o;
-  const d=STICKERS.reduce((a,s)=>a+Math.max(0,cnt(s.id)-1),0);
-  const pct=Math.round(o/total*100);
-  document.getElementById('progFill').style.width=pct+'%';
-  document.getElementById('progLabel').textContent=o+' / '+total+' '+t('figuritasLabel');
-  document.getElementById('progPct').textContent=pct+'%';
-  document.getElementById('sOwned').textContent=o;
-  document.getElementById('sMiss').textContent=miss;
-  document.getElementById('sDup').textContent=d;
-}
+    function applyLang() {
+        const t = T[lang];
+        document.getElementById('syncBadge').textContent = db ? t.synced : t.connecting;
+        document.getElementById('lOwned').textContent = t.owned;
+        document.getElementById('lMiss').textContent = t.missing;
+        document.getElementById('lDup').textContent = t.duplicates;
+        document.querySelector('.t-album').textContent = t.album;
+        document.querySelector('.t-teams').textContent = t.teams;
+        document.querySelector('.t-dups').textContent = t.dups;
+        document.getElementById('fb-all').textContent = t.all;
+        document.getElementById('fb-miss').textContent = t.filterMiss;
+        document.getElementById('fb-own').textContent = t.filterOwn;
+        document.getElementById('fb-dup').textContent = t.filterDup;
+        document.getElementById('srch').placeholder = t.search;
+        const allOpt = document.getElementById('opt-all-teams');
+        if (allOpt)
+            allOpt.textContent = t.allTeams;
+    }
 
-window.setFilter=function(f,btn){
-  filter=f;
-  document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  renderGrid();
-};
+    // ── VIEW MODE ─────────────────────────────────────────────────────────────────
+    window.setView = function(v) {
+        viewMode = v;
+        localStorage.setItem('viewMode', v);
+        document.getElementById('vbtn-grid').classList.toggle('active', v === 'grid');
+        document.getElementById('vbtn-list').classList.toggle('active', v === 'list');
+        renderAlbum();
+    };
 
-window.showTab=function(name,btn){
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t_btn=>t_btn.classList.remove('active'));
-  document.getElementById('tab-'+name).classList.add('active');
-  btn.classList.add('active');
-  if(name==='equipos')renderTeams();
-  if(name==='repetidas')renderDups();
-};
+    // ── FIREBASE INIT ─────────────────────────────────────────────────────────────
+    const cfg = getConfig();
+    if (!cfg) {
+        document.getElementById('setupScreen').style.display = 'block';
+        applyLang();
+    } else {
+        document.getElementById('mainApp').style.display = 'block';
+        // Set correct lang btn
+        document.querySelectorAll('.lang-btn').forEach(b => {
+            b.classList.toggle('active', b.textContent === lang.toUpperCase());
+        });
+        document.getElementById('vbtn-grid').classList.toggle('active', viewMode === 'grid');
+        document.getElementById('vbtn-list').classList.toggle('active', viewMode === 'list');
+        applyLang();
 
-function renderGrid(){
-  const q=document.getElementById('srch').value.toLowerCase();
-  const t_val=document.getElementById('teamSel').value;
-  let list=STICKERS;
-  if(t_val)list=list.filter(s=>s.team===t_val);
-  if(q)list=list.filter(s=>s.id.toLowerCase().includes(q)||s.name.toLowerCase().includes(q)||s.team.toLowerCase().includes(q));
-  if(filter==='missing')list=list.filter(s=>!owned(s.id));
-  if(filter==='owned')list=list.filter(s=>owned(s.id));
-  if(filter==='dup')list=list.filter(s=>dup(s.id));
-  
-  document.getElementById('cntLabel').textContent=t('showingLabel')+' '+list.length+' '+t('figuritasLabel');
-  
-  if(viewMode==='grid'){
-    document.getElementById('grid').innerHTML=list.map(s=>{
-      const o=owned(s.id),d=dup(s.id),c=cnt(s.id);
-      return`<div class="card${d?' dup':o?' owned':''}" onclick="toggle('${s.id}')">
-        ${c>0?`<span class="minus-btn" onclick="rem('${s.id}',event)">−</span>`:''}
-        ${d?`<span class="dup-badge">×${c}</span>`:s.foil&&!o?`<span class="foil-dot"></span>`:''}
-        <div class="card-check">${o?'✅':'⬜'}</div>
-        <div class="card-id">${s.id}</div>
-        <div class="card-name">${s.name}</div>
-      </div>`;
-    }).join('');
-  } else {
-    const grouped={};
-    list.forEach(s=>{
-      if(!grouped[s.team])grouped[s.team]=[];
-      grouped[s.team].push(s);
-    });
-    const teamOrder=TEAMS.filter(t_name=>grouped[t_name]);
-    document.getElementById('listView').innerHTML=teamOrder.map(t_name=>{
-      const stickers=grouped[t_name];
-      return`<div class="list-country">
-        <div class="list-country-header">${t_name}</div>
-        ${stickers.map(s=>{
-          const o=owned(s.id),d=dup(s.id),c=cnt(s.id);
-          return`<div class="list-item">
-            <div class="list-item-left">
-              <div class="list-status">${o?'✅':'⬜'}</div>
-              <div class="list-id">${s.id}</div>
-              <div class="list-name">${s.name}</div>
-            </div>
-            <div class="list-actions">
-              ${d?`<span class="list-count">×${c}</span>`:''}
-              ${c>0?`<button class="list-btn" onclick="rem('${s.id}',event)">−</button>`:''}
-              <button class="list-btn" onclick="toggle('${s.id}')">+</button>
-            </div>
-          </div>`;
-        }).join('')}
-      </div>`;
-    }).join('');
-  }
-  updateHeader();
-}
+        const app = initializeApp({
+            apiKey: cfg.apiKey,
+            projectId: cfg.projectId,
+            appId: cfg.appId,
+            databaseURL: `https://${cfg.projectId}-default-rtdb.firebaseio.com`
+        });
+        db = getDatabase(app);
+        const colRef = ref(db, 'album/collection');
+        onValue(colRef, (snap) => {
+            const data = snap.val();
+            col = data || {};
+            const badge = document.getElementById('syncBadge');
+            badge.textContent = T[lang].synced;
+            badge.className = 'sync-badge sync-ok';
+            renderAlbum();
+            renderTeams();
+            renderDups();
+            updateHeader();
+            populateTeamSelect();
+        }, (err) => {
+            const badge = document.getElementById('syncBadge');
+            badge.textContent = T[lang].offline;
+            badge.className = 'sync-badge sync-off';
+        });
+    }
 
-function renderTeams(){
-  document.getElementById('teamList').innerHTML=TEAMS.map(t_name=>{
-    const ts=STICKERS.filter(s=>s.team===t_name);
-    const o=ts.filter(s=>owned(s.id)).length;
-    const pct=Math.round(o/ts.length*100);
-    return`<div class="team-item">
-      <div class="team-header">
-        <span class="team-name">${t_name}</span>
-        <span class="team-count">${o}/${ts.length} ${pct===100?'✅':''}</span>
-      </div>
-      <div class="team-bar"><div class="team-fill${pct===100?' complete':''}" style="width:${pct}%"></div></div>
-    </div>`;
-  }).join('');
-}
+    function pushToFirebase() {
+        if (!db)
+            return;
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            update(ref(db, 'album'), {
+                collection: col
+            });
+        }, 600);
+    }
 
-function renderDups(){
-  const dups=STICKERS.filter(s=>dup(s.id));
-  const total=STICKERS.reduce((a,s)=>a+Math.max(0,cnt(s.id)-1),0);
-  document.getElementById('dupLabel').textContent=dups.length>0?total+' '+t('dups'):t('noDups');
-  document.getElementById('dupList').innerHTML=dups.map(s=>`
-    <div class="dup-item">
-      <div><div class="dup-id">${s.id}</div><div class="dup-name">${s.name} · ${s.team}</div></div>
-      <div style="display:flex;align-items:center;gap:8px">
-        <span class="dup-count">×${cnt(s.id)-1} ${t('extra')}</span>
-        <button class="minus-dup" onclick="rem('${s.id}',event)">−</button>
-      </div>
-    </div>`).join('');
-}
+    // ── HELPERS ───────────────────────────────────────────────────────────────────
+    function cnt(id) {
+        return col[id] || 0;
+    }
+    function owned(id) {
+        return cnt(id) >= 1;
+    }
+    function dup(id) {
+        return cnt(id) > 1;
+    }
 
-window.toggle=function(id){col[id]=(col[id]||0)+1;pushToFirebase();renderGrid();renderDups();};
-window.rem=function(id,e){e.stopPropagation();if(col[id]>1)col[id]--;else delete col[id];pushToFirebase();renderGrid();renderDups();};
-window.renderGrid=renderGrid;
-</script>
+    function getFiltered() {
+        const q = document.getElementById('srch').value.toLowerCase();
+        const t = document.getElementById('teamSel').value;
+        let list = STICKERS;
+        if (t)
+            list = list.filter(s => s.team === t);
+        if (q)
+            list = list.filter(s => s.id.toLowerCase().includes(q) || s.name.toLowerCase().includes(q) || s.team.toLowerCase().includes(q));
+        if (filter === 'missing')
+            list = list.filter(s => !owned(s.id));
+        if (filter === 'owned')
+            list = list.filter(s => owned(s.id));
+        if (filter === 'dup')
+            list = list.filter(s => dup(s.id));
+        return list;
+    }
+
+    function populateTeamSelect() {
+        const sel = document.getElementById('teamSel');
+        while (sel.options.length > 1)
+            sel.remove(1);
+        TEAMS.forEach(t => {
+            const ts = STICKERS.filter(s => s.team === t);
+            const o = ts.filter(s => owned(s.id)).length;
+            const opt = document.createElement('option');
+            opt.value = t;
+            opt.textContent = t + ' (' + o + '/' + ts.length + ')';
+            sel.appendChild(opt);
+        });
+    }
+
+    function updateHeader() {
+        const total = STICKERS.length;
+        const o = STICKERS.filter(s => owned(s.id)).length;
+        const miss = total - o;
+        const d = STICKERS.reduce((a, s) => a + Math.max(0, cnt(s.id) - 1), 0);
+        const pct = Math.round(o / total * 100);
+        document.getElementById('progFill').style.width = pct + '%';
+        document.getElementById('progLabel').textContent = o + ' / ' + total + ' ' + T[lang].stickers;
+        document.getElementById('progPct').textContent = pct + '%';
+        document.getElementById('sOwned').textContent = o;
+        document.getElementById('sMiss').textContent = miss;
+        document.getElementById('sDup').textContent = d;
+    }
+
+    window.setFilter = function(f, btn) {
+        filter = f;
+        document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderAlbum();
+    };
+
+    window.showTab = function(name, btn) {
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.getElementById('tab-' + name).classList.add('active');
+        btn.classList.add('active');
+        if (name === 'equipos')
+            renderTeams();
+        if (name === 'repetidas')
+            renderDups();
+    };
+
+    // ── RENDER ALBUM ──────────────────────────────────────────────────────────────
+    window.renderAlbum = function() {
+        const list = getFiltered();
+        const t = T[lang];
+        document.getElementById('cntLabel').textContent = t.showing + ' ' + list.length + ' ' + t.stickers;
+        updateHeader();
+        populateTeamSelect();
+        if (viewMode === 'grid') {
+            renderGrid(list);
+        } else {
+            renderList(list);
+        }
+    };
+
+    function renderGrid(list) {
+        document.getElementById('albumContent').innerHTML =
+        '<div class="grid">' +
+        list.map(s => {
+            const o = owned(s.id),
+                d = dup(s.id),
+                c = cnt(s.id);
+            return `<div class="card${d ? ' dup' : o ? ' owned' : ''}" onclick="toggle('${s.id}')">
+                    ${c > 0 ? `<span class="minus-btn" onclick="rem('${s.id}',event)">−</span>` : ''}
+                    ${d ? `<span class="dup-badge">×${c}</span>` : s.foil && !o ? `<span class="foil-dot"></span>` : ''}
+                    <div class="card-check">${o ? '✅' : '⬜'}</div>
+                    <div class="card-id">${s.id}</div>
+                    <div class="card-name">${s.name}</div>
+                  </div>`;
+        }).join('') +
+        '</div>';
+    }
+
+    function renderList(list) {
+        const t = T[lang];
+        // Group by team
+        const teamMap = {};
+        list.forEach(s => {
+            if (!teamMap[s.team])
+                teamMap[s.team] = [];
+            teamMap[s.team].push(s);
+        });
+        const teams = Object.keys(teamMap);
+        if (teams.length === 0) {
+            document.getElementById('albumContent').innerHTML = '<div class="count-label">—</div>';
+            return;
+        }
+        document.getElementById('albumContent').innerHTML = '<div class="list-view">' +
+        teams.map(team => {
+            const items = teamMap[team];
+            const o = items.filter(s => owned(s.id)).length;
+            return `<div class="country-section">
+                    <div class="country-header"><span>${team}</span><span>${o}/${items.length}</span></div>
+                    <table class="list-table">
+                      <thead><tr><th>${t.status}</th><th>${t.id}</th><th>${t.name}</th><th>${t.actions}</th></tr></thead>
+                      <tbody>${items.map(s => {const o = owned(s.id),d = dup(s.id),c = cnt(s.id);return `<tr class="list-row${d ? ' dup' : o ? ' owned' : ''}">
+                              <td style="font-size:16px;text-align:center">${o ? '✅' : '⬜'}</td>
+                              <td class="list-id">${s.id}</td>
+                              <td>${s.name}</td>
+                              <td><div class="list-actions">
+                                <button class="act-btn add" onclick="toggle('${s.id}')">+</button>
+                                ${c > 0 ? `<button class="act-btn sub" onclick="rem('${s.id}',event)">−</button>` : ''}
+                                ${d ? `<span class="dup-pill">×${c}</span>` : ''}
+                              </div></td>
+                            </tr>`;}).join('')}</tbody>
+                    </table>
+                  </div>`;
+        }).join('') +
+        '</div>';
+    }
+
+    function renderTeams() {
+        const t = T[lang];
+        document.getElementById('teamList').innerHTML = TEAMS.map(team => {
+            const ts = STICKERS.filter(s => s.team === team);
+            const o = ts.filter(s => owned(s.id)).length;
+            const pct = Math.round(o / ts.length * 100);
+            return `<div class="team-item">
+                  <div class="team-header-row">
+                    <span class="team-name-txt">${team}</span>
+                    <span class="team-count-txt">${o}/${ts.length} ${pct === 100 ? '✅ ' + t.complete : ''}</span>
+                  </div>
+                  <div class="team-bar"><div class="team-fill${pct === 100 ? ' complete' : ''}" style="width:${pct}%"></div></div>
+                </div>`;
+        }).join('');
+    }
+
+    function renderDups() {
+        const t = T[lang];
+        const dups = STICKERS.filter(s => dup(s.id));
+        const total = STICKERS.reduce((a, s) => a + Math.max(0, cnt(s.id) - 1), 0);
+        document.getElementById('dupLabel').textContent = dups.length > 0 ? total + ' ' + t.dupCount : t.noDups;
+        document.getElementById('dupList').innerHTML = dups.map(s => `
+            <div class="dup-item">
+              <div><div class="dup-id-txt">${s.id}</div><div class="dup-name-txt">${s.name} · ${s.team}</div></div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <span class="dup-count-pill">×${cnt(s.id) - 1} ${t.extra}</span>
+                <button class="minus-dup" onclick="rem('${s.id}',event)">−</button>
+              </div>
+            </div>`).join('');
+    }
+
+    window.toggle = function(id) {
+        col[id] = (col[id] || 0) + 1;
+        pushToFirebase();
+        renderAlbum();
+        renderDups();
+    };
+    window.rem = function(id, e) {
+        e.stopPropagation();
+        if (col[id] > 1)
+            col[id]--;
+        else
+            delete col[id];
+        pushToFirebase();
+        renderAlbum();
+        renderDups();
+    };
+    </script>
 </body>
 </html>
